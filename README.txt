@@ -1,7 +1,13 @@
-FANTA CONTE RC5
-- Diagnostica PWA visibile: HTTPS, manifest, icone, service worker e controllo pagina
-- Pulsante per azzerare cache e vecchi service worker senza cancellare listone o valutazioni
-- Manifest con percorsi relativi, più robusto su GitHub Pages
-- Stato giocatore acquistato, prezzo e proprietario
-- Budget residuo calcolato sugli acquisti della propria squadra
-- Tutti i dati e le valutazioni RC3/RC4 restano compatibili
+FANTA CONTE RC6 - GESTIONE ASTA OPERATIVA
+
+Novità:
+- dashboard budget iniziale, speso e residuo;
+- configurazione nome squadra e posti rosa P/D/C/A;
+- contatori della propria rosa per ruolo;
+- filtri disponibili, acquistati e mia rosa;
+- scheda giocatore con azioni rapide preferito, obiettivo ed escluso;
+- registrazione acquisto, prezzo e proprietario;
+- evidenza grafica dei giocatori acquistati da te;
+- mantenimento del listone e delle valutazioni già salvate nelle RC precedenti.
+
+La PWA non è l'obiettivo di questa RC: lo sviluppo è concentrato sulle funzioni operative dell'asta.
