@@ -1,13 +1,10 @@
-FANTA CONTE RC7 - GESTIONE ASTA OPERATIVA
+FANTA CONTE RC8 - ASSISTENTE ASTA
 
-Novità:
-- dashboard budget iniziale, speso e residuo;
-- configurazione nome squadra e posti rosa P/D/C/A;
-- contatori della propria rosa per ruolo;
-- filtri disponibili, acquistati e mia rosa;
-- scheda giocatore con azioni rapide preferito, obiettivo ed escluso;
-- registrazione acquisto, prezzo e proprietario;
-- evidenza grafica dei giocatori acquistati da te;
-- mantenimento del listone e delle valutazioni già salvate nelle RC precedenti.
+Novita principali:
+- Obiettivi divisi in Priorita 1, Priorita 2 e Piano B.
+- Pannello Assistente Conte con filtri rapidi.
+- Semaforo decisionale su ogni giocatore.
+- Statistiche live per ruolo: disponibili, prezzo medio e obiettivi rimasti.
+- Compatibilita con dati, note, acquisti e backup delle RC precedenti.
 
-La PWA non è l'obiettivo di questa RC: lo sviluppo è concentrato sulle funzioni operative dell'asta.
+Caricare tutti i file nella cartella principale del repository GitHub.

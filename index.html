@@ -9,13 +9,13 @@
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC7</title>
+  <title>Fanta Conte RC8</title>
 </head>
 <body>
 <header class="topbar">
   <div>
     <p class="eyebrow">CENTRO OPERATIVO ASTA</p>
-    <h1>⚽ Fanta Conte <span>RC7</span></h1>
+    <h1>⚽ Fanta Conte <span>RC8</span></h1>
   </div>
 </header>
 
@@ -71,6 +71,22 @@
     </div>
     <div class="role-advice" id="roleAdvice"></div>
     <div id="auctionLog" class="auction-log" hidden></div>
+  </section>
+
+
+  <section class="intelligence-panel">
+    <div class="dash-title">
+      <div><strong>Assistente Conte</strong><small>Obiettivi, semafori e statistiche live</small></div>
+      <button id="showAllPlayers" class="mini-btn" type="button">Mostra tutti</button>
+    </div>
+
+    <div class="plan-cards">
+      <button type="button" data-plan="ASSOLUTO"><span>🔴 Priorità 1</span><strong id="countAbsolute">0</strong><small>Obiettivi assoluti liberi</small></button>
+      <button type="button" data-plan="PRIORITA2"><span>🟡 Priorità 2</span><strong id="countSecond">0</strong><small>Alternative principali</small></button>
+      <button type="button" data-plan="PIANOB"><span>🔵 Piano B</span><strong id="countPlanB">0</strong><small>Riserve ancora disponibili</small></button>
+    </div>
+
+    <div id="roleStats" class="role-stats"></div>
   </section>
 
   <section class="import-box">
@@ -140,6 +156,15 @@
       <option value="TITOLARE">Titolare</option>
       <option value="SCOMMESSA">Scommessa</option>
       <option value="EVITA">Da evitare</option>
+    </select>
+  </label>
+
+  <label>Piano d’asta
+    <select id="targetLevel">
+      <option value="">Non assegnato</option>
+      <option value="ASSOLUTO">🔴 Priorità 1 · obiettivo assoluto</option>
+      <option value="PRIORITA2">🟡 Priorità 2 · alternativa principale</option>
+      <option value="PIANOB">🔵 Piano B · riserva</option>
     </select>
   </label>
 
