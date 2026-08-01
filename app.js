@@ -215,3 +215,19 @@ $('#toggleLog').addEventListener('click',()=>{const box=$('#auctionLog');box.hid
 $('#auctionLog').addEventListener('click',e=>{const id=e.target?.dataset?.undo;if(!id)return;const x=profile(id);x.bought=false;x.isMine=false;x.buyPrice='';x.buyOwner='';commitProfile(id,x);render();toast('Acquisto annullato')});
 $('#exportBackup').addEventListener('click',()=>{const payload={version:BACKUP_VERSION,createdAt:new Date().toISOString(),players,state,meta,setup};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Fanta-Conte-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);toast('Backup creato')});
 $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!data||!Array.isArray(data.players)||typeof data.state!=='object')throw new Error('Backup non valido');players=data.players;state=data.state||{};meta=data.meta||meta;setup=data.setup||setup;localStorage.setItem(LIST_KEY,JSON.stringify(players));localStorage.setItem(STATE_KEY,JSON.stringify(state));localStorage.setItem(META_KEY,JSON.stringify(meta));saveSetup();loadSetupForm();buildTeams();render();toast('Backup ripristinato')}catch(err){toast('Errore nel backup: '+err.message,5000)}e.target.value=''});
+
+// RC11 · stato visivo della navigazione inferiore
+(()=>{
+  const links=[...document.querySelectorAll('.bottom-nav a[href^="#"]')];
+  const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const setActive=id=>links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+  links.forEach(a=>a.addEventListener('click',()=>setActive(a.getAttribute('href').slice(1))));
+  if('IntersectionObserver'in window){
+    const observer=new IntersectionObserver(entries=>{
+      const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if(visible)setActive(visible.target.id);
+    },{rootMargin:'-25% 0px -58% 0px',threshold:[.05,.2,.5]});
+    sections.forEach(s=>observer.observe(s));
+  }
+  setActive('listone');
+})();

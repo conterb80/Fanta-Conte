@@ -148,3 +148,91 @@ label{font-size:.68rem;margin:7px 0}input,select,textarea{margin-top:4px;padding
   .sort-row.three{grid-template-columns:1fr}.budget-cards{grid-template-columns:repeat(2,1fr)}
   .role-stats,.role-advice{grid-template-columns:repeat(2,1fr)}
 }
+
+/* =========================================================
+   RC11 · VISUAL POLISH
+   Rifinitura grafica, micro-interazioni e leggibilità mobile
+   ========================================================= */
+:root{
+  --panel-glow:rgba(139,77,255,.18);
+  --glass:rgba(24,14,44,.82);
+  --role-p:#4cc9f0;
+  --role-d:#59e391;
+  --role-c:#ffca57;
+  --role-a:#ff6f91;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:linear-gradient(115deg,rgba(255,255,255,.018),transparent 36%,rgba(255,255,255,.012));
+}
+.app-header{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.brand-mark{position:relative;overflow:hidden}
+.brand-mark:after{content:"";position:absolute;inset:-70% -30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);transform:rotate(28deg);animation:brandSweep 5.5s ease-in-out infinite}
+@keyframes brandSweep{0%,65%{translate:-140% 0}85%,100%{translate:150% 0}}
+.hero-search span{color:var(--lime);opacity:.9;font-size:1.12rem}
+.hero-search input::placeholder{color:#aaa2ba}
+.compact-summary>div{position:relative;overflow:hidden}
+.compact-summary>div:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--violet2),transparent);opacity:.55}
+.command-bar{border-color:rgba(185,133,255,.15)}
+.role-tabs button,.sort-row select,.text-button,.secondary-btn,.import-btn,.icon-button{transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.role-tabs button:active,.text-button:active,.secondary-btn:active,.import-btn:active,.icon-button:active{transform:scale(.96)}
+.surface{position:relative;overflow:hidden}
+.surface:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.032),transparent 32%)}
+.surface:hover{border-color:rgba(159,103,255,.19)}
+.section-icon{box-shadow:inset 0 0 0 1px rgba(176,121,255,.14),0 6px 16px rgba(89,35,181,.14)}
+.budget-cards div,.roster-grid>div,.plan-cards button,.role-stats>div,.role-advice .advice{transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.budget-cards div:active,.plan-cards button:active{transform:scale(.975)}
+.budget-cards .safe-bid{background:linear-gradient(145deg,rgba(196,255,85,.12),rgba(8,12,7,.35));border-color:rgba(196,255,85,.18)}
+.budget-cards .safe-bid strong{color:var(--lime)}
+.roster-grid>div{border-left:2px solid rgba(255,255,255,.08)}
+.roster-grid>div:nth-child(1){border-left-color:var(--role-p)}
+.roster-grid>div:nth-child(2){border-left-color:var(--role-d)}
+.roster-grid>div:nth-child(3){border-left-color:var(--role-c)}
+.roster-grid>div:nth-child(4){border-left-color:var(--role-a)}
+.plan-cards button{position:relative;overflow:hidden}
+.plan-cards button:after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:2px;border-radius:999px;background:currentColor;opacity:.35}
+.player-list{perspective:900px}
+.card{position:relative;overflow:hidden;border-color:rgba(255,255,255,.075);transition:transform .17s ease,border-color .17s ease,box-shadow .17s ease,background .17s ease}
+.card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--violet);opacity:.72}
+.card:has(.role:first-child){will-change:transform}
+.card:active{transform:scale(.987);border-color:rgba(196,255,85,.28);box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.card.mine{background:linear-gradient(155deg,rgba(28,74,48,.52),#100c1b);border-color:rgba(64,224,140,.28)}
+.card.bought:not(.mine){filter:saturate(.72);opacity:.68}
+.card.avoided{opacity:.58}
+.role{position:relative;border-right:1px solid rgba(255,255,255,.06);font-weight:1000}
+.card .role{color:#fff}
+.card:has(.role:nth-child(1)){--role-accent:var(--violet)}
+.role:after{content:"";position:absolute;left:8px;right:8px;bottom:7px;height:2px;border-radius:999px;background:currentColor;opacity:.5}
+.card .role{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.2))}
+.card:has(.role){border-left-color:var(--role-accent,var(--violet))}
+.player-name{font-weight:950;letter-spacing:-.015em}
+.meta{color:#aca4bb}
+.official .pill{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.055)}
+.verdict{letter-spacing:.035em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.star{transition:transform .18s ease,color .18s ease,text-shadow .18s ease}
+.star:active{transform:scale(1.25) rotate(-8deg)}
+.star.on{color:#ffd85e;text-shadow:0 0 16px rgba(255,216,94,.36)}
+.tag{border:1px solid rgba(255,255,255,.055)}
+.bottom-nav{overflow:hidden}
+.bottom-nav:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent)}
+.bottom-nav a{position:relative;transition:color .18s ease,background .18s ease,transform .18s ease}
+.bottom-nav a:active{transform:translateY(1px)}
+.bottom-nav a.active{color:var(--lime);background:rgba(196,255,85,.075)}
+.bottom-nav a.active:after{content:"";position:absolute;left:32%;right:32%;bottom:1px;height:2px;border-radius:999px;background:var(--lime);box-shadow:0 0 10px rgba(196,255,85,.55)}
+.bottom-nav a.active span{transform:translateY(-1px)}
+dialog{box-shadow:0 24px 90px rgba(0,0,0,.68),0 0 0 1px rgba(173,112,255,.12)}
+dialog::backdrop{background:rgba(3,2,8,.76);backdrop-filter:blur(7px)}
+dialog[open]{animation:dialogIn .2s ease-out}
+@keyframes dialogIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+.toast{animation:toastIn .22s ease-out}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+@media (hover:hover){
+  .card:hover{transform:translateY(-2px);border-color:rgba(161,108,255,.24);box-shadow:0 12px 26px rgba(0,0,0,.2)}
+  .plan-cards button:hover,.budget-cards div:hover{transform:translateY(-1px)}
+}
+@media(max-width:650px){
+  .surface{border-radius:15px}.card{border-radius:13px}
+  .compact-summary>div{min-height:45px;display:flex;flex-direction:column;justify-content:center}
+  .bottom-nav{box-shadow:0 14px 44px rgba(0,0,0,.52),0 0 0 1px rgba(139,77,255,.08)}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
