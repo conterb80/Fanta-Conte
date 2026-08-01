@@ -1,0 +1,1 @@
+RC1 iniziale: struttura PWA dimostrativa. Da espandere con database completo, preferiti, note e lista personale.
