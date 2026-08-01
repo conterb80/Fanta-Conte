@@ -2,16 +2,37 @@
   "id": "/Fanta-Conte/",
   "name": "Fanta Conte",
   "short_name": "FantaConte",
-  "description": "Laboratorio personale per preparare l'asta Fantacalcio.",
-  "start_url": "/Fanta-Conte/?source=pwa",
-  "scope": "/Fanta-Conte/",
+  "description": "Listone personale per preparare l'asta Fantacalcio.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait-primary",
-  "background_color": "#0b0f17",
-  "theme_color": "#111827",
+  "background_color": "#07101d",
+  "theme_color": "#0b1220",
   "icons": [
-    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

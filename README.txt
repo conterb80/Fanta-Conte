@@ -1,10 +1,9 @@
-FANTA CONTE RC2
+FANTA CONTE RC3
+- 532 giocatori del listone test Fantacalcio.it 2025/26
+- importazione futura di file XLSX/XLS/CSV con struttura Fantacalcio.it
+- filtri per ruolo e squadra, ricerca, quotazioni e FVM
+- preferiti, obiettivi, giocatori da evitare, fasce, priorità, prezzo massimo e note
+- salvataggio locale delle valutazioni personali
+- PWA con service worker e manifest aggiornati
 
-Novità:
-- PWA installabile con icone 192/512 e service worker.
-- Pulsante "Installa app" quando Chrome rende disponibile l'installazione.
-- Filtri per ruolo e preferiti.
-- Preferiti, fascia personale, prezzo massimo e note salvati sul telefono.
-- Funzionamento offline dopo il primo caricamento.
-
-Il listone della RC2 è ancora dimostrativo: la struttura è pronta per importare il listone completo e aggiornarlo durante il mercato.
+Caricare tutti i file e la cartella icons nella root del repository GitHub.
