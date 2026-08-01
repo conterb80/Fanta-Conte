@@ -1,5 +1,5 @@
-const CACHE = 'fanta-conte-rc4-v2';
-const BASE = '/Fanta-Conte/';
+const CACHE = 'fanta-conte-rc5-v1';
+const BASE = new URL('./', self.registration.scope).pathname;
 const ASSETS = [
   BASE, BASE+'index.html', BASE+'style.css', BASE+'data.js', BASE+'xlsx-lite.js',
   BASE+'app.js', BASE+'manifest.json', BASE+'icons/icon-192.png', BASE+'icons/icon-512.png',
@@ -14,7 +14,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request).catch(() => caches.match(BASE+'index.html')));
+    event.respondWith(fetch(event.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(BASE+'index.html',c));return r}).catch(() => caches.match(BASE+'index.html')));
     return;
   }
   event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {

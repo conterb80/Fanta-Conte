@@ -9,11 +9,11 @@
   <link rel="icon" href="/Fanta-Conte/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/Fanta-Conte/icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC4</title>
+  <title>Fanta Conte RC5</title>
 </head>
 <body>
 <header class="topbar">
-  <div><p class="eyebrow">LABORATORIO ASTA</p><h1>⚽ Fanta Conte <span>RC4</span></h1></div>
+  <div><p class="eyebrow">LABORATORIO ASTA</p><h1>⚽ Fanta Conte <span>RC5</span></h1></div>
   <button id="installBtn" class="install-btn" hidden>Installa</button>
 </header>
 <main>
@@ -21,13 +21,14 @@
     <div><strong id="countAll">0</strong><span>Giocatori</span></div>
     <div><strong id="countFav">0</strong><span>Preferiti</span></div>
     <div><strong id="countTarget">0</strong><span>Obiettivi</span></div>
-    <div><strong id="countVisible">0</strong><span>Visibili</span></div>
+    <div><strong id="countBought">0</strong><span>Acquistati</span></div>
   </section>
 
   <section class="auction-dashboard">
     <div class="dash-title"><div><strong>Centro operativo asta</strong><small>Imposta il budget per iniziare a pianificare</small></div><button id="pwaHelp" class="mini-btn">📲 Installazione</button></div>
-    <div class="budget-row"><label>Budget lega<input id="totalBudget" type="number" min="1" inputmode="numeric" value="500"></label><div><span>Budget impostato</span><strong id="budgetDisplay">500</strong></div><div><span>Valore max obiettivi</span><strong id="targetMaxTotal">0</strong></div></div>
+    <div class="budget-row"><label>Budget lega<input id="totalBudget" type="number" min="1" inputmode="numeric" value="500"></label><div><span>Budget impostato</span><strong id="budgetDisplay">500</strong></div><div><span>Budget residuo</span><strong id="remainingBudget">500</strong></div></div>
     <div id="pwaStatus" class="pwa-status">Verifica installazione in corso…</div>
+    <details class="diag-box" id="diagBox"><summary>Diagnostica PWA</summary><div id="diagResults" class="diag-results"></div><div class="diag-actions"><button id="runDiag" class="mini-btn" type="button">Ripeti controllo</button><button id="resetPwa" class="mini-btn danger" type="button">Azzera cache PWA</button></div></details>
   </section>
 
   <section class="import-box">
@@ -65,6 +66,8 @@
 <select id="tier"><option value="">Non assegnata</option><option value="TOP">Top</option><option value="TITOLARE">Titolare</option><option value="SCOMMESSA">Scommessa</option><option value="EVITA">Da evitare</option></select></label>
 <label class="checkline"><input id="target" type="checkbox"> 🎯 Obiettivo d'asta</label>
 <label class="checkline"><input id="never" type="checkbox"> ❌ Non acquistare</label>
+<label class="checkline"><input id="bought" type="checkbox"> ✅ Giocatore acquistato</label>
+<div class="purchase-grid"><label>Prezzo acquisto<input id="buyPrice" type="number" min="0" inputmode="numeric" placeholder="Crediti"></label><label>Acquistato da<input id="buyOwner" type="text" placeholder="La mia squadra / avversario"></label></div>
 <label>Prezzo massimo<input id="maxPrice" type="number" min="0" inputmode="numeric" placeholder="Crediti"></label>
 <label>Priorità Conte<select id="priority"><option value="0">Nessuna</option><option value="1">★</option><option value="2">★★</option><option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option></select></label>
 <label>Note personali<textarea id="notes" rows="4" placeholder="Rigori, ballottaggio, infortuni, strategia…"></textarea></label>

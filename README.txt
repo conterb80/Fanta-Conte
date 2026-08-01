@@ -1,7 +1,7 @@
-FANTA CONTE RC4
-- PWA rinforzata con percorsi assoluti GitHub Pages
-- Icone standard e maskable separate
-- Service worker aggiornato e cache RC4
-- Stato installazione visibile dentro l'app
-- Centro operativo con budget e somma prezzi massimi degli obiettivi
-- Tutte le funzioni e i dati personali della RC3 restano compatibili
+FANTA CONTE RC5
+- Diagnostica PWA visibile: HTTPS, manifest, icone, service worker e controllo pagina
+- Pulsante per azzerare cache e vecchi service worker senza cancellare listone o valutazioni
+- Manifest con percorsi relativi, più robusto su GitHub Pages
+- Stato giocatore acquistato, prezzo e proprietario
+- Budget residuo calcolato sugli acquisti della propria squadra
+- Tutti i dati e le valutazioni RC3/RC4 restano compatibili
