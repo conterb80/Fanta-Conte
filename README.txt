@@ -1,4 +1,4 @@
-FANTA CONTE RC6 - GESTIONE ASTA OPERATIVA
+FANTA CONTE RC7 - GESTIONE ASTA OPERATIVA
 
 Novità:
 - dashboard budget iniziale, speso e residuo;

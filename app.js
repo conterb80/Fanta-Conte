@@ -2,6 +2,7 @@ const LIST_KEY='fanta-conte-list-v1';
 const STATE_KEY='fanta-conte-profile-v1';
 const META_KEY='fanta-conte-meta-v1';
 const SETUP_KEY='fanta-conte-setup-v2';
+const BACKUP_VERSION=1;
 
 let players=JSON.parse(localStorage.getItem(LIST_KEY)||'null')||window.DEFAULT_PLAYERS;
 let state=JSON.parse(localStorage.getItem(STATE_KEY)||'{}');
@@ -63,7 +64,10 @@ function dashboard(){
   $('#countBought').textContent=bought.length;
   $('#budgetDisplay').textContent=setup.budget;
   $('#spentBudget').textContent=spent;
-  $('#remainingBudget').textContent=Math.max(0,num(setup.budget)-spent);
+  const remaining=Math.max(0,num(setup.budget)-spent);
+  $('#remainingBudget').textContent=remaining;
+  const openSlots=['P','D','C','A'].reduce((sum,r)=>sum+Math.max(0,num(setup.slots[r])-mine.filter(p=>p.r===r).length),0);
+  $('#safeBid').textContent=Math.max(0,remaining-Math.max(0,openSlots-1));
 
   for(const r of ['P','D','C','A']){
     $('#mine'+r).textContent=mine.filter(p=>p.r===r).length;
@@ -71,6 +75,34 @@ function dashboard(){
     const cell=$('#mine'+r).closest('div');
     cell.classList.toggle('full',mine.filter(p=>p.r===r).length>=num(setup.slots[r]));
   }
+  renderRoleAdvice(mine,remaining);
+  renderAuctionLog();
+}
+
+function renderRoleAdvice(mine,remaining){
+  const box=$('#roleAdvice');
+  if(!box)return;
+  box.innerHTML=['P','D','C','A'].map(r=>{
+    const have=mine.filter(p=>p.r===r).length;
+    const total=num(setup.slots[r]);
+    const left=Math.max(0,total-have);
+    const label={P:'Portieri',D:'Difensori',C:'Centrocampisti',A:'Attaccanti'}[r];
+    return `<div class="advice ${left===0?'complete':''}"><strong>${r} · ${have}/${total}</strong><span>${left===0?'Reparto completo':`${left} posti da coprire`} · Budget ${remaining}</span></div>`;
+  }).join('');
+}
+
+function boughtPlayers(){
+  return players.filter(p=>profile(p.id).bought).sort((a,b)=>num(profile(b.id).buyPrice)-num(profile(a.id).buyPrice)||a.n.localeCompare(b.n));
+}
+
+function renderAuctionLog(){
+  const box=$('#auctionLog');
+  if(!box)return;
+  const rows=boughtPlayers();
+  box.innerHTML=rows.length?rows.map(p=>{
+    const x=profile(p.id);
+    return `<div class="log-row"><div><strong>${p.n}</strong><small>${p.r} · ${p.t} · ${x.buyOwner||'Senza proprietario'} · ${x.buyPrice||0} crediti</small></div><button type="button" data-undo="${p.id}">Annulla</button></div>`;
+  }).join(''):'<div class="empty">Nessun acquisto registrato.</div>';
 }
 
 function render(){
@@ -259,3 +291,43 @@ if('serviceWorker'in navigator){
 loadSetupForm();
 buildTeams();
 render();
+
+
+$('#toggleLog').addEventListener('click',()=>{
+  const box=$('#auctionLog');
+  box.hidden=!box.hidden;
+  if(!box.hidden) renderAuctionLog();
+});
+
+$('#auctionLog').addEventListener('click',e=>{
+  const id=e.target?.dataset?.undo;
+  if(!id)return;
+  const x=profile(id);
+  x.bought=false;x.isMine=false;x.buyPrice='';x.buyOwner='';
+  state[id]=x;saveState();render();toast('Acquisto annullato');
+});
+
+$('#exportBackup').addEventListener('click',()=>{
+  const payload={version:BACKUP_VERSION,createdAt:new Date().toISOString(),players,state,meta,setup};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`Fanta-Conte-backup-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);
+  toast('Backup creato');
+});
+
+$('#backupInput').addEventListener('change',async e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  try{
+    const data=JSON.parse(await file.text());
+    if(!data||!Array.isArray(data.players)||typeof data.state!=='object') throw new Error('Backup non valido');
+    players=data.players;state=data.state||{};meta=data.meta||meta;setup=data.setup||setup;
+    localStorage.setItem(LIST_KEY,JSON.stringify(players));
+    localStorage.setItem(STATE_KEY,JSON.stringify(state));
+    localStorage.setItem(META_KEY,JSON.stringify(meta));
+    saveSetup();loadSetupForm();buildTeams();render();toast('Backup ripristinato');
+  }catch(err){toast('Errore nel backup: '+err.message,5000)}
+  e.target.value='';
+});

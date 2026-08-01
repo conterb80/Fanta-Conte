@@ -9,13 +9,13 @@
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC6</title>
+  <title>Fanta Conte RC7</title>
 </head>
 <body>
 <header class="topbar">
   <div>
     <p class="eyebrow">CENTRO OPERATIVO ASTA</p>
-    <h1>⚽ Fanta Conte <span>RC6</span></h1>
+    <h1>⚽ Fanta Conte <span>RC7</span></h1>
   </div>
 </header>
 
@@ -37,6 +37,7 @@
       <div><span>Budget iniziale</span><strong id="budgetDisplay">500</strong></div>
       <div><span>Speso</span><strong id="spentBudget">0</strong></div>
       <div><span>Residuo</span><strong id="remainingBudget">500</strong></div>
+      <div class="safe-bid"><span>Offerta massima sicura</span><strong id="safeBid">476</strong></div>
     </div>
 
     <div class="roster-grid" id="rosterGrid">
@@ -63,11 +64,26 @@
     </div>
   </section>
 
+  <section class="live-panel">
+    <div class="dash-title">
+      <div><strong>Asta live</strong><small>Controlla rosa, crediti e ultimi acquisti</small></div>
+      <button id="toggleLog" class="mini-btn" type="button">📋 Registro</button>
+    </div>
+    <div class="role-advice" id="roleAdvice"></div>
+    <div id="auctionLog" class="auction-log" hidden></div>
+  </section>
+
   <section class="import-box">
     <div><strong id="seasonLabel">Listone test 2025/26</strong><small id="importInfo">Giocatori caricati</small></div>
-    <label class="import-btn">📥 Importa listone
-      <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden>
-    </label>
+    <div class="import-actions">
+      <label class="import-btn">📥 Importa listone
+        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden>
+      </label>
+      <button id="exportBackup" class="secondary-btn" type="button">💾 Backup</button>
+      <label class="secondary-btn">♻️ Ripristina
+        <input id="backupInput" type="file" accept=".json" hidden>
+      </label>
+    </div>
   </section>
 
   <section class="controls">
