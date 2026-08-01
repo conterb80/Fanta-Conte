@@ -1,10 +1,9 @@
-FANTA CONTE RC9 - ASSISTENTE ASTA
+FANTA CONTE RC10 — COMPACT PRO UI
 
-Novita principali:
-- Obiettivi divisi in Priorita 1, Priorita 2 e Piano B.
-- Pannello Assistente Conte con filtri rapidi.
-- Semaforo decisionale su ogni giocatore.
-- Statistiche live per ruolo: disponibili, prezzo medio e obiettivi rimasti.
-- Compatibilita con dati, note, acquisti e backup delle RC precedenti.
-
-Caricare tutti i file nella cartella principale del repository GitHub.
+Aggiornamento dedicato esclusivamente alla grafica e alla compattezza.
+- nuova gerarchia visiva stile app professionale
+- dashboard più bassa e leggibile
+- controlli e filtri compattati
+- card giocatore più ordinate
+- navigazione inferiore rifinita
+- nessuna modifica ai dati o alle funzioni già testate
