@@ -1,4 +1,4 @@
-FANTA CONTE RC8 - ASSISTENTE ASTA
+FANTA CONTE RC9 - ASSISTENTE ASTA
 
 Novita principali:
 - Obiettivi divisi in Priorita 1, Priorita 2 e Piano B.

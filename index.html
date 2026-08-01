@@ -3,41 +3,72 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#120a2a">
   <meta name="description" content="Fanta Conte: centro operativo personale per l'asta Fantacalcio.">
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC8</title>
+  <title>Fanta Conte RC9</title>
 </head>
 <body>
-<header class="topbar">
-  <div>
-    <p class="eyebrow">CENTRO OPERATIVO ASTA</p>
-    <h1>⚽ Fanta Conte <span>RC8</span></h1>
+<header class="app-header">
+  <div class="brand-row">
+    <div class="brand-mark" aria-hidden="true">FC</div>
+    <div class="brand-copy">
+      <p class="eyebrow">LABORATORIO ASTA</p>
+      <h1>Fanta Conte <span>RC9</span></h1>
+    </div>
+    <button id="toggleSetup" class="icon-button" type="button" aria-label="Impostazioni">⚙</button>
   </div>
-</header>
 
-<main>
-  <section class="summary">
+  <label class="hero-search"><span>⌕</span><input id="q" type="search" placeholder="Cerca giocatore o squadra" autocomplete="off"></label>
+
+  <section class="summary compact-summary" aria-label="Riepilogo listone">
     <div><strong id="countAvailable">0</strong><span>Disponibili</span></div>
     <div><strong id="countFav">0</strong><span>Preferiti</span></div>
     <div><strong id="countTarget">0</strong><span>Obiettivi</span></div>
     <div><strong id="countBought">0</strong><span>Acquistati</span></div>
   </section>
+</header>
 
-  <section class="auction-dashboard">
-    <div class="dash-title">
-      <div><strong>La mia asta</strong><small>Budget, rosa e posti occupati</small></div>
-      <button id="toggleSetup" class="mini-btn" type="button">⚙️ Impostazioni</button>
+<main>
+  <section class="controls command-bar" id="listone">
+    <div class="role-tabs" id="roleTabs">
+      <button class="active" data-role="TUTTI">Tutti</button>
+      <button data-role="P">P</button><button data-role="D">D</button>
+      <button data-role="C">C</button><button data-role="A">A</button>
+      <button data-role="PREFERITI">★</button><button data-role="OBIETTIVI">🎯</button>
+    </div>
+    <div class="sort-row three">
+      <select id="availabilityFilter" aria-label="Disponibilità">
+        <option value="AVAILABLE">Solo disponibili</option>
+        <option value="ALL">Tutti</option>
+        <option value="BOUGHT">Solo acquistati</option>
+        <option value="MINE">La mia rosa</option>
+      </select>
+      <select id="teamFilter" aria-label="Squadra"><option value="">Tutte le squadre</option></select>
+      <select id="sortBy" aria-label="Ordinamento">
+        <option value="qa-desc">Quotazione ↓</option>
+        <option value="fvm-desc">FVM ↓</option>
+        <option value="priority-desc">Priorità ↓</option>
+        <option value="name">Nome A-Z</option>
+        <option value="team">Squadra</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="auction-dashboard surface" id="asta">
+    <div class="section-heading">
+      <div><span class="section-icon">◈</span><div><strong>La mia asta</strong><small>Budget e composizione rosa</small></div></div>
+      <span class="status-dot">LIVE</span>
     </div>
 
     <div class="budget-cards">
-      <div><span>Budget iniziale</span><strong id="budgetDisplay">500</strong></div>
+      <div><span>Budget</span><strong id="budgetDisplay">500</strong></div>
       <div><span>Speso</span><strong id="spentBudget">0</strong></div>
       <div><span>Residuo</span><strong id="remainingBudget">500</strong></div>
-      <div class="safe-bid"><span>Offerta massima sicura</span><strong id="safeBid">476</strong></div>
+      <div class="safe-bid"><span>Offerta sicura</span><strong id="safeBid">476</strong></div>
     </div>
 
     <div class="roster-grid" id="rosterGrid">
@@ -48,12 +79,9 @@
     </div>
 
     <div id="setupPanel" class="setup-panel" hidden>
-      <label>Nome della mia squadra
-        <input id="myTeamName" type="text" placeholder="Es. Fanta Conte">
-      </label>
-      <label>Budget iniziale
-        <input id="totalBudget" type="number" min="1" inputmode="numeric" value="500">
-      </label>
+      <div class="form-title">Configurazione asta</div>
+      <label>Nome della mia squadra<input id="myTeamName" type="text" placeholder="Es. Fanta Conte"></label>
+      <label>Budget iniziale<input id="totalBudget" type="number" min="1" inputmode="numeric" value="500"></label>
       <div class="slots-setup">
         <label>Portieri<input id="slotsP" type="number" min="0" value="3"></label>
         <label>Difensori<input id="slotsD" type="number" min="0" value="8"></label>
@@ -64,120 +92,72 @@
     </div>
   </section>
 
-  <section class="live-panel">
-    <div class="dash-title">
-      <div><strong>Asta live</strong><small>Controlla rosa, crediti e ultimi acquisti</small></div>
-      <button id="toggleLog" class="mini-btn" type="button">📋 Registro</button>
+  <section class="intelligence-panel surface" id="obiettivi">
+    <div class="section-heading">
+      <div><span class="section-icon">✦</span><div><strong>Assistente Conte</strong><small>Priorità e piani alternativi</small></div></div>
+      <button id="showAllPlayers" class="text-button" type="button">Mostra tutti</button>
+    </div>
+    <div class="plan-cards">
+      <button type="button" data-plan="ASSOLUTO"><span>Priorità 1</span><strong id="countAbsolute">0</strong><small>Obiettivi assoluti</small></button>
+      <button type="button" data-plan="PRIORITA2"><span>Priorità 2</span><strong id="countSecond">0</strong><small>Alternative principali</small></button>
+      <button type="button" data-plan="PIANOB"><span>Piano B</span><strong id="countPlanB">0</strong><small>Riserve disponibili</small></button>
+    </div>
+    <div id="roleStats" class="role-stats"></div>
+  </section>
+
+  <section class="live-panel surface">
+    <div class="section-heading">
+      <div><span class="section-icon">⌁</span><div><strong>Asta live</strong><small>Reparti e ultimi acquisti</small></div></div>
+      <button id="toggleLog" class="text-button" type="button">Registro</button>
     </div>
     <div class="role-advice" id="roleAdvice"></div>
     <div id="auctionLog" class="auction-log" hidden></div>
   </section>
 
-
-  <section class="intelligence-panel">
-    <div class="dash-title">
-      <div><strong>Assistente Conte</strong><small>Obiettivi, semafori e statistiche live</small></div>
-      <button id="showAllPlayers" class="mini-btn" type="button">Mostra tutti</button>
+  <section class="import-box surface" id="strumenti">
+    <div class="section-heading data-heading">
+      <div><span class="section-icon">⇩</span><div><strong id="seasonLabel">Listone test 2025/26</strong><small id="importInfo">Giocatori caricati</small></div></div>
     </div>
-
-    <div class="plan-cards">
-      <button type="button" data-plan="ASSOLUTO"><span>🔴 Priorità 1</span><strong id="countAbsolute">0</strong><small>Obiettivi assoluti liberi</small></button>
-      <button type="button" data-plan="PRIORITA2"><span>🟡 Priorità 2</span><strong id="countSecond">0</strong><small>Alternative principali</small></button>
-      <button type="button" data-plan="PIANOB"><span>🔵 Piano B</span><strong id="countPlanB">0</strong><small>Riserve ancora disponibili</small></button>
-    </div>
-
-    <div id="roleStats" class="role-stats"></div>
-  </section>
-
-  <section class="import-box">
-    <div><strong id="seasonLabel">Listone test 2025/26</strong><small id="importInfo">Giocatori caricati</small></div>
     <div class="import-actions">
-      <label class="import-btn">📥 Importa listone
-        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden>
-      </label>
-      <button id="exportBackup" class="secondary-btn" type="button">💾 Backup</button>
-      <label class="secondary-btn">♻️ Ripristina
-        <input id="backupInput" type="file" accept=".json" hidden>
-      </label>
+      <label class="import-btn">Importa listone<input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden></label>
+      <button id="exportBackup" class="secondary-btn" type="button">Backup</button>
+      <label class="secondary-btn">Ripristina<input id="backupInput" type="file" accept=".json" hidden></label>
     </div>
   </section>
 
-  <section class="controls">
-    <label class="search"><span>🔎</span><input id="q" type="search" placeholder="Cerca giocatore o squadra…" autocomplete="off"></label>
-    <div class="role-tabs" id="roleTabs">
-      <button class="active" data-role="TUTTI">Tutti</button>
-      <button data-role="P">P</button><button data-role="D">D</button>
-      <button data-role="C">C</button><button data-role="A">A</button>
-      <button data-role="PREFERITI">★</button><button data-role="OBIETTIVI">🎯</button>
-    </div>
-    <div class="sort-row three">
-      <select id="availabilityFilter">
-        <option value="AVAILABLE">Solo disponibili</option>
-        <option value="ALL">Tutti</option>
-        <option value="BOUGHT">Solo acquistati</option>
-        <option value="MINE">La mia rosa</option>
-      </select>
-      <select id="teamFilter"><option value="">Tutte le squadre</option></select>
-      <select id="sortBy">
-        <option value="qa-desc">Quotazione ↓</option>
-        <option value="fvm-desc">FVM ↓</option>
-        <option value="priority-desc">Priorità ↓</option>
-        <option value="name">Nome A-Z</option>
-        <option value="team">Squadra</option>
-      </select>
-    </div>
-  </section>
-
+  <div class="list-heading">
+    <div><strong>Listone giocatori</strong><small>Tocca una scheda per modificarla</small></div>
+  </div>
   <section id="list" class="player-list" aria-live="polite"></section>
 </main>
+
+<nav class="bottom-nav" aria-label="Navigazione rapida">
+  <a href="#listone"><span>⌕</span><small>Listone</small></a>
+  <a href="#obiettivi"><span>★</span><small>Obiettivi</small></a>
+  <a href="#asta"><span>◈</span><small>Asta</small></a>
+  <a href="#strumenti"><span>⚙</span><small>Strumenti</small></a>
+</nav>
 
 <dialog id="playerDialog">
 <form method="dialog" id="playerForm">
   <button class="close" value="cancel" aria-label="Chiudi">×</button>
   <p class="eyebrow" id="dialogMeta"></p>
   <h2 id="dialogName"></h2>
-
   <div class="official-grid">
     <div><span>Quotazione</span><strong id="dialogQa"></strong></div>
     <div><span>FVM</span><strong id="dialogFvm"></strong></div>
     <div><span>Ruolo Mantra</span><strong id="dialogRm"></strong></div>
   </div>
-
   <div class="quick-actions">
     <button id="quickFav" type="button">☆ Preferito</button>
     <button id="quickTarget" type="button">🎯 Obiettivo</button>
-    <button id="quickNever" type="button">❌ Escludi</button>
+    <button id="quickNever" type="button">⊘ Escludi</button>
   </div>
-
-  <label>Valutazione personale
-    <select id="tier">
-      <option value="">Non assegnata</option>
-      <option value="TOP">Top</option>
-      <option value="TITOLARE">Titolare</option>
-      <option value="SCOMMESSA">Scommessa</option>
-      <option value="EVITA">Da evitare</option>
-    </select>
-  </label>
-
-  <label>Piano d’asta
-    <select id="targetLevel">
-      <option value="">Non assegnato</option>
-      <option value="ASSOLUTO">🔴 Priorità 1 · obiettivo assoluto</option>
-      <option value="PRIORITA2">🟡 Priorità 2 · alternativa principale</option>
-      <option value="PIANOB">🔵 Piano B · riserva</option>
-    </select>
-  </label>
-
-  <label>Priorità Conte
-    <select id="priority">
-      <option value="0">Nessuna</option><option value="1">★</option><option value="2">★★</option>
-      <option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option>
-    </select>
-  </label>
-
+  <label>Valutazione personale<select id="tier"><option value="">Non assegnata</option><option value="TOP">Top</option><option value="TITOLARE">Titolare</option><option value="SCOMMESSA">Scommessa</option><option value="EVITA">Da evitare</option></select></label>
+  <label>Piano d’asta<select id="targetLevel"><option value="">Non assegnato</option><option value="ASSOLUTO">Priorità 1 · obiettivo assoluto</option><option value="PRIORITA2">Priorità 2 · alternativa principale</option><option value="PIANOB">Piano B · riserva</option></select></label>
+  <label>Priorità Conte<select id="priority"><option value="0">Nessuna</option><option value="1">★</option><option value="2">★★</option><option value="3">★★★</option><option value="4">★★★★</option><option value="5">★★★★★</option></select></label>
   <label>Prezzo massimo<input id="maxPrice" type="number" min="0" inputmode="numeric" placeholder="Crediti"></label>
   <label>Note personali<textarea id="notes" rows="4" placeholder="Rigori, ballottaggio, infortuni, strategia…"></textarea></label>
-
   <fieldset class="purchase-box">
     <legend>Stato asta</legend>
     <label class="checkline"><input id="bought" type="checkbox"> Giocatore acquistato</label>
@@ -187,7 +167,6 @@
       <label>Acquistato da<input id="buyOwner" type="text" placeholder="Nome squadra"></label>
     </div>
   </fieldset>
-
   <button class="save" value="default">Salva scheda</button>
 </form>
 </dialog>
