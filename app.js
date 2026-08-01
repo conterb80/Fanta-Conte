@@ -1,5 +1,5 @@
 
-const LIST_KEY='fanta-conte-list-v1', STATE_KEY='fanta-conte-profile-v1', META_KEY='fanta-conte-meta-v1';
+const LIST_KEY='fanta-conte-list-v1', STATE_KEY='fanta-conte-profile-v1', META_KEY='fanta-conte-meta-v1', BUDGET_KEY='fanta-conte-budget-v1';
 let players=JSON.parse(localStorage.getItem(LIST_KEY)||'null')||window.DEFAULT_PLAYERS;
 let state=JSON.parse(localStorage.getItem(STATE_KEY)||'{}');
 let meta=JSON.parse(localStorage.getItem(META_KEY)||'null')||{label:'Listone test 2025/26',date:''};
@@ -40,6 +40,8 @@ function render(){
   $('#countTarget').textContent=players.filter(p=>profile(p.id).target).length;
   $('#countVisible').textContent=rows.length;
   $('#seasonLabel').textContent=meta.label;
+  const targetMax=players.reduce((sum,p)=>{const x=profile(p.id);return sum+(x.target?Number(x.maxPrice||0):0)},0);
+  const el=document.querySelector('#targetMaxTotal'); if(el) el.textContent=targetMax;
   $('#importInfo').textContent=`${players.length} giocatori caricati${meta.date?' · '+meta.date:''}`;
 }
 function openPlayer(p){
@@ -70,8 +72,14 @@ $('#fileInput').addEventListener('change',async e=>{
 });
 function toast(msg,time=2600){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(window._toast);window._toast=setTimeout(()=>t.hidden=true,time)}
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installBtn').hidden=false});
-$('#installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('#installBtn').hidden=true});
-window.addEventListener('appinstalled',()=>$('#installBtn').hidden=true);
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(console.error));
+const installBtn=$('#installBtn'), pwaStatus=$('#pwaStatus');
+function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
+function setPwaStatus(text,kind=''){if(!pwaStatus)return;pwaStatus.textContent=text;pwaStatus.className='pwa-status '+kind}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBtn.hidden=false;setPwaStatus('App pronta: tocca Installa per aggiungerla come vera app.','ok')});
+installBtn.addEventListener('click',async()=>{if(!deferredPrompt){setPwaStatus('Apri il menu di Chrome e cerca “Installa app”. Se vedi solo scorciatoia, aggiorna la pagina una volta.','warn');return}deferredPrompt.prompt();const choice=await deferredPrompt.userChoice;if(choice.outcome==='accepted')setPwaStatus('Installazione accettata. Cerca l’icona Fanta Conte.','ok');deferredPrompt=null;installBtn.hidden=true});
+window.addEventListener('appinstalled',()=>{installBtn.hidden=true;setPwaStatus('Fanta Conte è installata sul telefono.','ok')});
+$('#pwaHelp')?.addEventListener('click',()=>{if(isStandalone())setPwaStatus('Stai già usando Fanta Conte come app installata.','ok');else if(deferredPrompt)installBtn.click();else setPwaStatus('Aggiorna la pagina, poi attendi alcuni secondi. In alternativa: menu Chrome → Installa app.','warn')});
+const budgetInput=$('#totalBudget');
+if(budgetInput){budgetInput.value=localStorage.getItem(BUDGET_KEY)||'500';const updateBudget=()=>{$('#budgetDisplay').textContent=budgetInput.value||0;localStorage.setItem(BUDGET_KEY,budgetInput.value||0)};budgetInput.addEventListener('input',updateBudget);updateBudget()}
+if('serviceWorker'in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('/Fanta-Conte/sw.js',{scope:'/Fanta-Conte/'});await navigator.serviceWorker.ready;if(isStandalone())setPwaStatus('Fanta Conte è aperta come app installata.','ok');else if(!deferredPrompt)setPwaStatus('PWA attiva. Attendi il pulsante Installa oppure controlla il menu Chrome.','ok');console.log('SW pronto',reg.scope)}catch(err){console.error(err);setPwaStatus('Service worker non attivo: ricarica la pagina.','warn')}})}
 buildTeams(); render();

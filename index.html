@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b1220">
   <meta name="description" content="Fanta Conte: listone personale per preparare l'asta Fantacalcio.">
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" href="./icons/icon-192.png">
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="manifest" href="/Fanta-Conte/manifest.json">
+  <link rel="icon" href="/Fanta-Conte/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/Fanta-Conte/icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC3</title>
+  <title>Fanta Conte RC4</title>
 </head>
 <body>
 <header class="topbar">
-  <div><p class="eyebrow">LABORATORIO ASTA</p><h1>⚽ Fanta Conte <span>RC3</span></h1></div>
+  <div><p class="eyebrow">LABORATORIO ASTA</p><h1>⚽ Fanta Conte <span>RC4</span></h1></div>
   <button id="installBtn" class="install-btn" hidden>Installa</button>
 </header>
 <main>
@@ -22,6 +22,12 @@
     <div><strong id="countFav">0</strong><span>Preferiti</span></div>
     <div><strong id="countTarget">0</strong><span>Obiettivi</span></div>
     <div><strong id="countVisible">0</strong><span>Visibili</span></div>
+  </section>
+
+  <section class="auction-dashboard">
+    <div class="dash-title"><div><strong>Centro operativo asta</strong><small>Imposta il budget per iniziare a pianificare</small></div><button id="pwaHelp" class="mini-btn">📲 Installazione</button></div>
+    <div class="budget-row"><label>Budget lega<input id="totalBudget" type="number" min="1" inputmode="numeric" value="500"></label><div><span>Budget impostato</span><strong id="budgetDisplay">500</strong></div><div><span>Valore max obiettivi</span><strong id="targetMaxTotal">0</strong></div></div>
+    <div id="pwaStatus" class="pwa-status">Verifica installazione in corso…</div>
   </section>
 
   <section class="import-box">

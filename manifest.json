@@ -1,38 +1,25 @@
 {
   "id": "/Fanta-Conte/",
   "name": "Fanta Conte",
-  "short_name": "FantaConte",
-  "description": "Listone personale per preparare l'asta Fantacalcio.",
-  "start_url": "./?source=pwa",
-  "scope": "./",
+  "short_name": "Fanta Conte",
+  "description": "Listone personale e centro operativo per l'asta Fantacalcio.",
+  "lang": "it-IT",
+  "dir": "ltr",
+  "start_url": "/Fanta-Conte/?utm_source=pwa",
+  "scope": "/Fanta-Conte/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#07101d",
   "theme_color": "#0b1220",
+  "categories": ["sports", "utilities"],
   "icons": [
-    {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    {"src":"/Fanta-Conte/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/Fanta-Conte/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"/Fanta-Conte/icons/maskable-192.png","sizes":"192x192","type":"image/png","purpose":"maskable"},
+    {"src":"/Fanta-Conte/icons/maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Apri listone","short_name":"Listone","url":"/Fanta-Conte/?view=listone","icons":[{"src":"/Fanta-Conte/icons/icon-192.png","sizes":"192x192"}]}
   ]
 }
