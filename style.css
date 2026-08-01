@@ -236,3 +236,187 @@ dialog[open]{animation:dialogIn .2s ease-out}
   .bottom-nav{box-shadow:0 14px 44px rgba(0,0,0,.52),0 0 0 1px rgba(139,77,255,.08)}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+
+/* =========================================================
+   RC12 · SOFT PREMIUM RESTYLING
+   Palette più equilibrata, meno bagliori, più ordine visivo
+   ========================================================= */
+:root{
+  --bg:#090b12;
+  --bg2:#111522;
+  --surface:#151a28;
+  --surface2:#1a2030;
+  --surface3:#0f131e;
+  --line:rgba(184,194,216,.10);
+  --line-strong:rgba(184,194,216,.18);
+  --text:#f3f5f8;
+  --muted:#98a0b2;
+  --violet:#806ee8;
+  --violet2:#9b8df1;
+  --lime:#72c879;
+  --green:#43b97a;
+  --amber:#e5b84f;
+  --red:#e56f75;
+  --blue:#6fa8df;
+  --shadow:0 12px 34px rgba(0,0,0,.24);
+  --panel-glow:rgba(128,110,232,.09);
+  --glass:rgba(18,22,34,.90);
+  --role-p:#6fa8df;
+  --role-d:#55bd86;
+  --role-c:#d5af56;
+  --role-a:#d97885;
+}
+body{
+  background:
+    radial-gradient(circle at 85% -10%,rgba(128,110,232,.11),transparent 31%),
+    linear-gradient(180deg,#090b12 0%,#0c0f18 46%,#090b12 100%);
+}
+body:before{display:none}
+.app-header{
+  background:linear-gradient(180deg,rgba(17,21,34,.98),rgba(14,17,28,.97));
+  border-bottom-color:rgba(184,194,216,.10);
+  box-shadow:0 8px 24px rgba(0,0,0,.22);
+}
+.brand-mark{
+  background:linear-gradient(145deg,#8170df,#6fc878);
+  color:#0b0e15;
+  box-shadow:none;
+}
+.brand-mark:after{display:none}
+.eyebrow{color:#b2a9ee;letter-spacing:.14em}
+.brand-copy h1 span{
+  color:#c1b9f4;background:rgba(128,110,232,.12);
+  border-color:rgba(128,110,232,.18)
+}
+.icon-button,.hero-search,.command-bar,.surface,.compact-summary>div,
+.role-tabs button,.sort-row select,.bottom-nav,.card,dialog{
+  box-shadow:none;
+}
+.icon-button{
+  background:#171c2a;border-color:var(--line);color:#cfd4df
+}
+.hero-search{
+  background:#101521;border-color:rgba(184,194,216,.14)
+}
+.hero-search:focus-within{border-color:rgba(128,110,232,.48);box-shadow:0 0 0 3px rgba(128,110,232,.08)}
+.hero-search span{color:#a99cf0;opacity:.9}
+.compact-summary>div{
+  background:#171c2a;border-color:var(--line)
+}
+.compact-summary>div:before{display:none}
+.compact-summary strong{color:#f4f6fa}
+.compact-summary span{color:#9098aa}
+.command-bar{
+  background:rgba(12,15,24,.96);border-color:var(--line)
+}
+.role-tabs button{
+  background:#141925;border-color:var(--line);color:#aeb5c4
+}
+.role-tabs button.active{
+  background:#806ee8;color:white;border-color:#806ee8;
+  box-shadow:0 5px 14px rgba(128,110,232,.18)
+}
+.sort-row select{
+  background:#121722;border-color:var(--line);color:#d8dce5
+}
+.surface{
+  background:linear-gradient(155deg,#171c29,#121722);
+  border-color:var(--line);box-shadow:0 8px 22px rgba(0,0,0,.16)
+}
+.surface:before{display:none}
+.surface:hover{border-color:var(--line-strong)}
+.section-icon{
+  background:rgba(128,110,232,.14);color:#a99cf0;
+  box-shadow:none
+}
+.status-dot{
+  color:#91d79a;background:rgba(67,185,122,.10);border-color:rgba(67,185,122,.24)
+}
+.budget-cards div,.roster-grid>div,.plan-cards button,.role-stats>div,.role-advice .advice{
+  background:#111621;border-color:rgba(184,194,216,.09)
+}
+.budget-cards .safe-bid{
+  background:rgba(67,185,122,.08);border-color:rgba(67,185,122,.22)
+}
+.budget-cards .safe-bid strong{color:#87d08e}
+.roster-grid>div{border-left-width:1px}
+.plan-cards button{box-shadow:none}
+.plan-cards button:after{opacity:.22}
+.plan-cards button:nth-child(1){border-left-color:#d97885}
+.plan-cards button:nth-child(2){border-left-color:#d5af56}
+.plan-cards button:nth-child(3){border-left-color:#6fa8df}
+.text-button{color:#b5aaf0}
+.import-btn{
+  background:#806ee8;color:#fff;box-shadow:none
+}
+.secondary-btn{background:#171d2b;border-color:var(--line);color:#e2e5eb}
+.list-heading strong{color:#f2f4f7}
+.card{
+  background:linear-gradient(155deg,#151a27,#111620);
+  border-color:rgba(184,194,216,.09);
+  box-shadow:0 5px 14px rgba(0,0,0,.13)
+}
+.card:before{width:2px;background:#806ee8;opacity:.45}
+.card:active{border-color:rgba(128,110,232,.30);box-shadow:none}
+.card.mine{background:linear-gradient(155deg,rgba(43,92,66,.35),#111620);border-color:rgba(67,185,122,.24)}
+.role{background:#10141e!important;color:#dfe3eb!important;border-right-color:rgba(184,194,216,.08)}
+.role:after{opacity:.28}
+.player-name{font-weight:800;color:#f3f5f8}
+.meta{color:#9da5b5}
+.official .pill,.tag{
+  background:rgba(255,255,255,.025);border-color:rgba(184,194,216,.08);color:#b5bdca
+}
+.verdict{box-shadow:none;border-color:rgba(184,194,216,.08)}
+.star{color:#666f82}
+.star.on{color:#e5b84f;text-shadow:none}
+.bottom-nav{
+  background:rgba(16,20,31,.97);border-color:rgba(184,194,216,.12);
+  box-shadow:0 10px 28px rgba(0,0,0,.30)
+}
+.bottom-nav:before{display:none}
+.bottom-nav a{color:#929bac}
+.bottom-nav a.active{color:#b5aaf0;background:rgba(128,110,232,.08)}
+.bottom-nav a.active:after{background:#806ee8;box-shadow:none}
+dialog{
+  background:linear-gradient(165deg,#181e2c,#101520);
+  border-color:rgba(184,194,216,.14)
+}
+dialog::backdrop{background:rgba(4,6,11,.78)}
+.quick-actions button{background:#151b29;border-color:var(--line);color:#d7dce5}
+input,select,textarea{background:#0e131d;border-color:var(--line);color:#eef1f5}
+.purchase-box{border-color:var(--line)}
+.save,.primary-btn{background:#806ee8;color:white;box-shadow:none}
+.toast{background:#1a2030;border-color:var(--line);color:#f1f3f7}
+
+/* Compattezza e gerarchia */
+.app-header{padding-bottom:8px}
+.brand-row{margin-bottom:9px}
+.hero-search{height:42px;margin-bottom:8px}
+.compact-summary>div{min-height:48px}
+main{gap:10px}
+.surface{padding:10px 11px;border-radius:16px}
+.section-heading{margin-bottom:8px}
+.section-heading strong{font-size:.93rem}
+.budget-cards div{padding:8px 6px}
+.plan-cards button{min-height:66px;padding:9px}
+.import-box{padding:9px 10px}
+.card{min-height:72px;border-radius:14px}
+.open-player{padding:9px 7px}
+.bottom-nav{border-radius:20px}
+
+@media(max-width:650px){
+  .app-header{padding:9px 9px 7px}
+  .brand-mark{width:34px;height:34px;border-radius:11px;font-size:.72rem}
+  .brand-copy h1{font-size:1.08rem}
+  .eyebrow{font-size:.49rem}
+  .hero-search{height:39px}
+  .compact-summary>div{min-height:43px}
+  .compact-summary strong{font-size:1rem}
+  .compact-summary span{font-size:.48rem}
+  .surface{padding:9px 10px}
+  .card{min-height:68px;grid-template-columns:32px 1fr 32px}
+  .role{font-size:.8rem}
+  .player-name{font-size:.86rem}
+  .meta{font-size:.59rem}
+}

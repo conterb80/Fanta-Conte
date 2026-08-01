@@ -1,4 +1,4 @@
-FANTA CONTE RC11 — VISUAL POLISH
+FANTA CONTE RC12 — VISUAL POLISH
 
 Aggiornamento dedicato esclusivamente a grafica, ordine e micro-interazioni.
 - gerarchia visiva più netta
