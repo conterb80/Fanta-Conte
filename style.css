@@ -607,3 +607,14 @@ body[data-main-view="mylist"] .role-tabs button.active[data-role="A"]{background
   body[data-main-view="mylist"] .role-tabs button{height:38px;font-size:.70rem;padding:0 8px}
   .choice-tabs .dot{width:11px;height:11px}
 }
+
+/* RC17 · esportazione fogli asta */
+.export-tools{width:100%;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.export-title strong{display:block;font-size:.82rem}.export-title small{display:block;color:var(--muted);font-size:.62rem;margin-top:2px}
+.export-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:9px}
+.export-btn{min-width:0;display:grid;grid-template-columns:26px 1fr;grid-template-rows:auto auto;column-gap:7px;text-align:left;align-items:center;padding:9px;border-radius:12px;border:1px solid var(--line-strong);background:#111723;color:var(--text)}
+.export-btn span{grid-row:1/3;width:26px;height:26px;display:grid;place-items:center;border-radius:8px;font-size:.9rem;font-weight:900}
+.export-btn b{font-size:.67rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.export-btn small{color:var(--muted);font-size:.54rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.export-btn.excel span{color:#77d99d;background:rgba(52,168,83,.12)}.export-btn.pdf span{color:#ff8f95;background:rgba(234,67,53,.12)}
+.export-btn:active{transform:scale(.98)}
+@media(max-width:650px){.export-grid{grid-template-columns:1fr 1fr}.export-btn{padding:10px}.export-btn b{font-size:.7rem}}

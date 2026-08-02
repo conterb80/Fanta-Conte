@@ -270,3 +270,36 @@ $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[
   ['asta','obiettivi','livePanel','strumenti'].forEach(id=>setPanel(id,false));
   setMainView(mainView,{scroll:false});
 })();
+
+// RC17 · esportazione Excel/PDF per listone e lista personale
+function exportRows(scope='full'){
+  const source=scope==='mine'?players.filter(p=>isMyChoice(profile(p.id))):players.slice();
+  const roleOrder={P:1,D:2,C:3,A:4};
+  return source.sort((a,b)=>(roleOrder[a.r]||9)-(roleOrder[b.r]||9)||planWeight(profile(b.id))-planWeight(profile(a.id))||num(b.qa)-num(a.qa)||a.n.localeCompare(b.n));
+}
+function xmlEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+function htmlEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function downloadBlob(content,type,filename){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function makeExcel(scope){
+  const mine=scope==='mine', rows=exportRows(scope);
+  const headers=mine?['Ruolo','Giocatore','Squadra','Qt.','FVM','Priorità asta','Stelle','Max mio','Valutazione','Note','Acquistato','Prezzo','Proprietario']:['✓','Ruolo','Giocatore','Squadra','Qt.','FVM','Diff.','Acquistato','Prezzo','Proprietario'];
+  const table=rows.map(p=>{const x=profile(p.id);return mine?[p.r,p.n,p.t,p.qa,p.fvm,planLabel(x.targetLevel).replace(/^[^ ]+ /,''),num(x.priority),x.maxPrice,x.tier,x.notes,x.bought?'Sì':'',x.buyPrice,x.buyOwner]:['',p.r,p.n,p.t,p.qa,p.fvm,p.diff,x.bought?'Sì':'',x.buyPrice,x.buyOwner]}).map(row=>'<Row>'+row.map((v,i)=>`<Cell><Data ss:Type="${typeof v==='number'?'Number':'String'}">${xmlEsc(v)}</Data></Cell>`).join('')+'</Row>').join('');
+  const widths=mine?[45,150,90,45,55,100,45,55,85,220,65,55,110]:[28,42,145,90,45,55,45,65,55,110];
+  const cols=widths.map(w=>`<Column ss:Width="${w}"/>`).join('');
+  const title=mine?'Fanta Conte - La mia lista':'Fanta Conte - Listone completo';
+  const xml=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Styles><Style ss:ID="Header"><Font ss:Bold="1"/><Interior ss:Color="#D9EAD3" ss:Pattern="Solid"/></Style></Styles><Worksheet ss:Name="${mine?'Mia lista':'Listone'}"><Table>${cols}<Row ss:StyleID="Header">${headers.map(h=>`<Cell><Data ss:Type="String">${xmlEsc(h)}</Data></Cell>`).join('')}</Row>${table}</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><FrozenNoSplit/><SplitHorizontal>1</SplitHorizontal><TopRowBottomPane>1</TopRowBottomPane><Print><ValidPrinterInfo/><HorizontalResolution>600</HorizontalResolution><VerticalResolution>600</VerticalResolution></Print></WorksheetOptions></Worksheet></Workbook>`;
+  downloadBlob('\ufeff'+xml,'application/vnd.ms-excel',`Fanta-Conte-${mine?'Mia-Lista':'Listone'}-${new Date().toISOString().slice(0,10)}.xls`);toast(`${title}: file Excel creato`);
+}
+function priorityText(x){return x.targetLevel?planLabel(x.targetLevel).replace(/^[^ ]+ /,''):x.fav?'Preferito':''}
+function printPdf(scope){
+  const mine=scope==='mine', rows=exportRows(scope);
+  const grouped=['P','D','C','A'].map(role=>({role,rows:rows.filter(p=>p.r===role)})).filter(g=>g.rows.length);
+  const sections=grouped.map(g=>`<section><h2>${roleLabel(g.role)} <small>${g.rows.length}</small></h2><table><thead><tr>${mine?'<th>✓</th><th>Giocatore</th><th>Squadra</th><th>Priorità</th><th>Max</th><th>Note</th>':'<th>✓</th><th>Giocatore</th><th>Squadra</th><th>Qt.</th><th>FVM</th><th>Prezzo</th><th>Acquistato da</th>'}</tr></thead><tbody>${g.rows.map(p=>{const x=profile(p.id);return mine?`<tr class="${x.targetLevel||''}"><td class="check">□</td><td><b>${htmlEsc(p.n)}</b>${x.bought?'<br><small>GIÀ ACQUISTATO</small>':''}</td><td>${htmlEsc(p.t)}</td><td>${htmlEsc(priorityText(x))}${x.priority>0?` · ${'★'.repeat(num(x.priority))}`:''}</td><td>${htmlEsc(x.maxPrice||'')}</td><td>${htmlEsc(x.notes||'')}</td></tr>`:`<tr class="${x.bought?'bought':''}"><td class="check">□</td><td><b>${htmlEsc(p.n)}</b></td><td>${htmlEsc(p.t)}</td><td>${htmlEsc(p.qa)}</td><td>${htmlEsc(p.fvm)}</td><td>${htmlEsc(x.buyPrice||'')}</td><td>${htmlEsc(x.buyOwner||'')}</td></tr>`}).join('')}</tbody></table></section>`).join('');
+  const title=mine?'LA MIA LISTA - GUIDA ASTA':'LISTONE COMPLETO - FOGLIO ASTA';
+  const win=window.open('','_blank');if(!win){toast('Consenti i popup per creare il PDF',4500);return}
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>@page{size:A4 ${mine?'portrait':'landscape'};margin:9mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;margin:0;font-size:${mine?'9.5':'8.5'}pt}header{display:flex;justify-content:space-between;align-items:end;border-bottom:2px solid #111;padding-bottom:5px;margin-bottom:7px}h1{font-size:16pt;margin:0}header p{margin:0;font-size:8pt;color:#555}section{break-inside:avoid;margin-bottom:9px}h2{font-size:11pt;margin:6px 0 3px;padding:4px 6px;background:#e9edf2;border-left:5px solid #555}h2 small{font-size:8pt;color:#666}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #999;padding:3px 4px;vertical-align:top;word-wrap:break-word}th{background:#f0f0f0;text-align:left;font-size:7.5pt}.check{font-size:14pt;text-align:center;width:25px}td small{color:#b00020;font-weight:bold}.ASSOLUTO td{background:#fff0f1}.PRIORITA2 td{background:#fff9e5}.PIANOB td{background:#edf7ff}.bought td{text-decoration:line-through;color:#777}footer{position:fixed;bottom:0;right:0;font-size:7pt;color:#777}@media print{button{display:none}}</style></head><body><header><div><h1>${title}</h1><p>${htmlEsc(meta.label)} · Creato il ${new Date().toLocaleDateString('it-IT')} · ${rows.length} giocatori</p></div><p>Fanta Conte RC17</p></header>${sections}<footer>Fanta Conte · ${setup.teamName}</footer><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
+}
+$('#excelFull')?.addEventListener('click',()=>makeExcel('full'));
+$('#excelMine')?.addEventListener('click',()=>makeExcel('mine'));
+$('#pdfFull')?.addEventListener('click',()=>printPdf('full'));
+$('#pdfMine')?.addEventListener('click',()=>printPdf('mine'));

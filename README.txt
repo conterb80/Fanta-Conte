@@ -1,9 +1,10 @@
-FANTA CONTE RC16
+FANTA CONTE RC17
 
-Focus: Listone e La mia lista.
-- Due viste principali separate e riconoscibili.
-- Listone: tutti i giocatori del file ufficiale.
-- La mia lista: solo giocatori con stelle, priorità, valutazioni, prezzo massimo o note.
-- Filtri rapidi Priorità 1, Priorità 2, Piano B e Preferiti.
-- Le funzioni Asta, Assistente, Asta live e Strumenti restano secondarie e richiudibili.
-- Compatibile con i dati salvati dalle RC precedenti.
+Versione operativa con Listone, La mia lista, backup/ripristino ed esportazione Excel/PDF.
+
+NOVITÀ RC17
+- Excel Listone completo
+- PDF Listone completo, stampabile e depennabile
+- Excel La mia lista con priorità, stelle, massimo e note
+- PDF La mia lista, divisa per ruolo e priorità
+- Tutti i dati e le funzioni RC16 restano compatibili
