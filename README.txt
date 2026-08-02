@@ -1,10 +1,1 @@
-FANTA CONTE RC12 — VISUAL POLISH
-
-Aggiornamento dedicato esclusivamente a grafica, ordine e micro-interazioni.
-- gerarchia visiva più netta
-- ruoli riconoscibili a colpo d’occhio
-- card giocatore più compatte e leggibili
-- pannelli con profondità e contrasto migliorati
-- barra inferiore con stato attivo
-- animazioni leggere al tocco
-- nessuna modifica ai dati o alle funzioni già testate
+RC13 · Modalità Preparazione/Asta. Il listone diventa la schermata principale; i pannelli operativi sono richiudibili e si aprono solo quando servono. Conserva listone, preferiti, valutazioni, acquisti e backup delle versioni precedenti.

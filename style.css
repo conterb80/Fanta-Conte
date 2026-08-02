@@ -420,3 +420,67 @@ main{gap:10px}
   .player-name{font-size:.86rem}
   .meta{font-size:.59rem}
 }
+
+
+/* =========================================================
+   RC13 · Modalità Preparazione/Asta e pannelli a comparsa
+   ========================================================= */
+.mode-switch{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+  max-width:430px;margin:7px auto 0;padding:4px;
+  border:1px solid rgba(184,194,216,.11);border-radius:14px;
+  background:rgba(8,12,20,.52)
+}
+.mode-switch button{
+  min-height:35px;border:0;border-radius:10px;background:transparent;
+  color:#8f98aa;font:inherit;font-size:.72rem;font-weight:750;
+  transition:background .18s ease,color .18s ease,transform .12s ease
+}
+.mode-switch button span{margin-right:5px;color:#9e91e6}
+.mode-switch button.active{
+  color:#f2f4f8;background:#24283a;box-shadow:inset 0 0 0 1px rgba(184,194,216,.10)
+}
+.mode-switch button:active{transform:scale(.98)}
+
+.panel-launchers{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  padding:0 1px
+}
+.panel-launchers button{
+  min-width:0;min-height:48px;padding:6px 3px;border:1px solid rgba(184,194,216,.10);
+  border-radius:13px;background:#121722;color:#aeb5c4;font:inherit;
+  display:grid;grid-template-columns:1fr auto;grid-template-areas:"icon arrow" "label label";
+  align-items:center;text-align:left;transition:.18s ease
+}
+.panel-launchers button>span{grid-area:icon;color:#9f91e7;font-size:.88rem;padding-left:5px}
+.panel-launchers button>small{grid-area:label;padding:2px 5px 0;font-size:.57rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.panel-launchers button>b{grid-area:arrow;font-size:.65rem;font-weight:500;color:#687185;padding-right:4px}
+.panel-launchers button.open{
+  color:#e9ecf2;background:#1a2030;border-color:rgba(128,110,232,.27)
+}
+.panel-launchers button.open>span,.panel-launchers button.open>b{color:#b5aaf0}
+
+.optional-panel{
+  overflow:hidden;max-height:1500px;opacity:1;transform:translateY(0);
+  transition:max-height .30s ease,opacity .20s ease,transform .22s ease,margin .25s ease,padding .25s ease,border-width .25s ease
+}
+.optional-panel.panel-collapsed{
+  max-height:0!important;opacity:0;transform:translateY(-5px);pointer-events:none;
+  margin-top:-10px!important;margin-bottom:0!important;padding-top:0!important;padding-bottom:0!important;
+  border-width:0!important
+}
+body[data-view-mode="prep"] .panel-launchers{position:sticky;top:0;z-index:14;background:rgba(7,11,18,.94);padding:6px 1px;backdrop-filter:blur(12px)}
+body[data-view-mode="prep"] .list-heading{margin-top:1px}
+body[data-view-mode="auction"] .panel-launchers{display:none}
+
+/* Nella preparazione il listone arriva subito dopo filtri e comandi. */
+.list-heading{scroll-margin-top:74px}
+.optional-panel{scroll-margin-top:74px}
+
+@media(max-width:650px){
+  .mode-switch{margin-top:5px}
+  .mode-switch button{min-height:31px;font-size:.64rem}
+  .panel-launchers{gap:5px}
+  .panel-launchers button{min-height:44px;border-radius:12px}
+  .panel-launchers button>small{font-size:.52rem}
+}

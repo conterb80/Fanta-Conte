@@ -9,7 +9,7 @@
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC12</title>
+  <title>Fanta Conte RC13</title>
 </head>
 <body>
 <header class="app-header">
@@ -17,7 +17,7 @@
     <div class="brand-mark" aria-hidden="true">FC</div>
     <div class="brand-copy">
       <p class="eyebrow">FANTA CONTE · ASTA CONTROL</p>
-      <h1>Fanta Conte <span>RC12</span></h1>
+      <h1>Fanta Conte <span>RC13</span></h1>
     </div>
     <button id="toggleSetup" class="icon-button" type="button" aria-label="Impostazioni">⚙</button>
   </div>
@@ -30,6 +30,11 @@
     <div><strong id="countTarget">0</strong><span>Obiettivi</span></div>
     <div><strong id="countBought">0</strong><span>Acquistati</span></div>
   </section>
+
+  <div class="mode-switch" role="group" aria-label="Modalità di utilizzo">
+    <button id="prepMode" class="active" type="button"><span>☰</span> Preparazione</button>
+    <button id="auctionMode" type="button"><span>◈</span> Modalità asta</button>
+  </div>
 </header>
 
 <main>
@@ -58,7 +63,14 @@
     </div>
   </section>
 
-  <section class="auction-dashboard surface" id="asta">
+  <section class="panel-launchers" aria-label="Pannelli operativi">
+    <button type="button" data-panel="asta"><span>◈</span><small>La mia asta</small><b>⌄</b></button>
+    <button type="button" data-panel="obiettivi"><span>✦</span><small>Assistente</small><b>⌄</b></button>
+    <button type="button" data-panel="livePanel"><span>⌁</span><small>Asta live</small><b>⌄</b></button>
+    <button type="button" data-panel="strumenti"><span>⚙</span><small>Strumenti</small><b>⌄</b></button>
+  </section>
+
+  <section class="auction-dashboard surface optional-panel" id="asta">
     <div class="section-heading">
       <div><span class="section-icon">◈</span><div><strong>La mia asta</strong><small>Controllo rapido della tua rosa</small></div></div>
       <span class="status-dot">LIVE</span>
@@ -92,7 +104,7 @@
     </div>
   </section>
 
-  <section class="intelligence-panel surface" id="obiettivi">
+  <section class="intelligence-panel surface optional-panel" id="obiettivi">
     <div class="section-heading">
       <div><span class="section-icon">✦</span><div><strong>Assistente Conte</strong><small>Obiettivi ordinati per strategia</small></div></div>
       <button id="showAllPlayers" class="text-button" type="button">Mostra tutti</button>
@@ -105,7 +117,7 @@
     <div id="roleStats" class="role-stats"></div>
   </section>
 
-  <section class="live-panel surface">
+  <section class="live-panel surface optional-panel" id="livePanel">
     <div class="section-heading">
       <div><span class="section-icon">⌁</span><div><strong>Asta live</strong><small>Situazione aggiornata in tempo reale</small></div></div>
       <button id="toggleLog" class="text-button" type="button">Registro</button>
@@ -114,7 +126,7 @@
     <div id="auctionLog" class="auction-log" hidden></div>
   </section>
 
-  <section class="import-box surface" id="strumenti">
+  <section class="import-box surface optional-panel" id="strumenti">
     <div class="section-heading data-heading">
       <div><span class="section-icon">⇩</span><div><strong id="seasonLabel">Listone test 2025/26</strong><small id="importInfo">Giocatori caricati</small></div></div>
     </div>

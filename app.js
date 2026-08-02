@@ -216,7 +216,7 @@ $('#auctionLog').addEventListener('click',e=>{const id=e.target?.dataset?.undo;i
 $('#exportBackup').addEventListener('click',()=>{const payload={version:BACKUP_VERSION,createdAt:new Date().toISOString(),players,state,meta,setup};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Fanta-Conte-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);toast('Backup creato')});
 $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!data||!Array.isArray(data.players)||typeof data.state!=='object')throw new Error('Backup non valido');players=data.players;state=data.state||{};meta=data.meta||meta;setup=data.setup||setup;localStorage.setItem(LIST_KEY,JSON.stringify(players));localStorage.setItem(STATE_KEY,JSON.stringify(state));localStorage.setItem(META_KEY,JSON.stringify(meta));saveSetup();loadSetupForm();buildTeams();render();toast('Backup ripristinato')}catch(err){toast('Errore nel backup: '+err.message,5000)}e.target.value=''});
 
-// RC11 · stato visivo della navigazione inferiore
+// RC13 · modalità Preparazione/Asta e stato navigazione
 (()=>{
   const links=[...document.querySelectorAll('.bottom-nav a[href^="#"]')];
   const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
@@ -230,4 +230,67 @@ $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[
     sections.forEach(s=>observer.observe(s));
   }
   setActive('listone');
+})();
+
+
+// RC13 · listone protagonista e pannelli operativi a comparsa
+(()=>{
+  const MODE_KEY='fanta-conte-view-mode-v1';
+  const prepButton=document.getElementById('prepMode');
+  const auctionButton=document.getElementById('auctionMode');
+  const launchers=[...document.querySelectorAll('.panel-launchers [data-panel]')];
+  const panels=new Map(launchers.map(button=>[button.dataset.panel,document.getElementById(button.dataset.panel)]));
+  let mode=localStorage.getItem(MODE_KEY)==='auction'?'auction':'prep';
+
+  const isOpen=panel=>panel && !panel.classList.contains('panel-collapsed');
+  const syncLauncher=button=>{
+    const open=isOpen(panels.get(button.dataset.panel));
+    button.classList.toggle('open',open);
+    button.setAttribute('aria-expanded',String(open));
+    const arrow=button.querySelector('b');
+    if(arrow)arrow.textContent=open?'⌃':'⌄';
+  };
+  const setPanel=(id,open,{scroll=false}={})=>{
+    const panel=panels.get(id);
+    if(!panel)return;
+    panel.classList.toggle('panel-collapsed',!open);
+    panel.setAttribute('aria-hidden',String(!open));
+    const button=launchers.find(x=>x.dataset.panel===id);
+    if(button)syncLauncher(button);
+    if(open&&scroll)setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  };
+  const applyMode=(next,{save=true}={})=>{
+    mode=next;
+    document.body.dataset.viewMode=mode;
+    prepButton.classList.toggle('active',mode==='prep');
+    auctionButton.classList.toggle('active',mode==='auction');
+    prepButton.setAttribute('aria-pressed',String(mode==='prep'));
+    auctionButton.setAttribute('aria-pressed',String(mode==='auction'));
+    if(mode==='prep'){
+      ['asta','obiettivi','livePanel','strumenti'].forEach(id=>setPanel(id,false));
+    }else{
+      ['asta','obiettivi','livePanel'].forEach(id=>setPanel(id,true));
+      setPanel('strumenti',false);
+    }
+    if(save)localStorage.setItem(MODE_KEY,mode);
+  };
+
+  launchers.forEach(button=>button.addEventListener('click',()=>{
+    const id=button.dataset.panel;
+    setPanel(id,!isOpen(panels.get(id)),{scroll:!isOpen(panels.get(id))});
+  }));
+  prepButton.addEventListener('click',()=>{applyMode('prep');document.getElementById('listone')?.scrollIntoView({behavior:'smooth',block:'start'})});
+  auctionButton.addEventListener('click',()=>{applyMode('auction');document.getElementById('asta')?.scrollIntoView({behavior:'smooth',block:'start'})});
+
+  // La navigazione inferiore apre il pannello necessario prima dello scorrimento.
+  document.querySelectorAll('.bottom-nav a[href^="#"]').forEach(link=>link.addEventListener('click',event=>{
+    const id=link.getAttribute('href').slice(1);
+    if(panels.has(id)){
+      event.preventDefault();
+      setPanel(id,true);
+      setTimeout(()=>panels.get(id).scrollIntoView({behavior:'smooth',block:'start'}),60);
+    }
+  }));
+
+  applyMode(mode,{save:false});
 })();
