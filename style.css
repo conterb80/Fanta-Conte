@@ -618,3 +618,66 @@ body[data-main-view="mylist"] .role-tabs button.active[data-role="A"]{background
 .export-btn.excel span{color:#77d99d;background:rgba(52,168,83,.12)}.export-btn.pdf span{color:#ff8f95;background:rgba(234,67,53,.12)}
 .export-btn:active{transform:scale(.98)}
 @media(max-width:650px){.export-grid{grid-template-columns:1fr 1fr}.export-btn{padding:10px}.export-btn b{font-size:.7rem}}
+
+/* =========================================================
+   RC18 · FIX SOVRAPPOSIZIONI + FOGLI ASTA RICHIUDIBILI
+   ========================================================= */
+/* I pulsanti operativi restano nel flusso della pagina: non coprono più
+   il titolo del Listone / La mia lista durante lo scorrimento. */
+body[data-view-mode="prep"] .panel-launchers{
+  position:relative;
+  top:auto;
+  z-index:1;
+  background:transparent;
+  padding:0 1px;
+  backdrop-filter:none;
+  margin-bottom:10px;
+}
+body[data-view-mode="prep"] .list-heading{margin-top:8px}
+
+/* Il blocco di stampa è chiuso all'apertura e si espande solo su richiesta. */
+.export-tools{
+  width:100%;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--line)
+}
+.export-toggle{
+  width:100%;min-height:58px;padding:10px 12px;
+  border:1px solid var(--line-strong);border-radius:14px;
+  background:#111723;color:var(--text);font:inherit;
+  display:grid;grid-template-columns:34px 1fr 22px;gap:10px;
+  align-items:center;text-align:left
+}
+.export-toggle-icon{
+  width:34px;height:34px;display:grid;place-items:center;
+  border-radius:10px;background:rgba(128,110,232,.13);
+  color:#b8adf6;font-size:1.05rem
+}
+.export-toggle-copy{min-width:0}
+.export-toggle-copy strong{display:block;font-size:.82rem}
+.export-toggle-copy small{
+  display:block;margin-top:2px;color:var(--muted);font-size:.59rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.export-toggle-arrow{
+  justify-self:end;color:#aeb7c8;font-size:.92rem;
+  transition:transform .18s ease
+}
+.export-toggle[aria-expanded="true"]{
+  background:#171d2a;border-color:rgba(128,110,232,.34)
+}
+.export-toggle[aria-expanded="true"] .export-toggle-arrow{transform:rotate(180deg)}
+.export-body{padding-top:9px}
+.export-body[hidden]{display:none!important}
+.export-grid{margin-top:0}
+
+/* Il titolo della lista conserva sempre uno spazio netto dai comandi. */
+.list-heading{position:relative;z-index:2;clear:both}
+
+@media(max-width:650px){
+  .export-toggle{min-height:56px;padding:9px 10px;grid-template-columns:32px 1fr 20px}
+  .export-toggle-icon{width:32px;height:32px}
+  .export-toggle-copy strong{font-size:.78rem}
+  .export-toggle-copy small{font-size:.56rem}
+}

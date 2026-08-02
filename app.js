@@ -271,6 +271,25 @@ $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[
   setMainView(mainView,{scroll:false});
 })();
 
+
+// RC18 · pannello fogli asta richiudibile e sempre non invasivo
+(()=>{
+  const toggle=document.getElementById('togglePrintTools');
+  const body=document.getElementById('printToolsBody');
+  if(!toggle||!body)return;
+  const setOpen=(open)=>{
+    body.hidden=!open;
+    toggle.setAttribute('aria-expanded',String(open));
+  };
+  setOpen(false);
+  toggle.addEventListener('click',()=>setOpen(body.hidden));
+  const toolsLauncher=document.querySelector('.panel-launchers [data-panel="strumenti"]');
+  if(toolsLauncher)toolsLauncher.addEventListener('click',()=>{
+    const tools=document.getElementById('strumenti');
+    setTimeout(()=>{if(tools?.classList.contains('panel-collapsed'))setOpen(false)},340);
+  });
+})();
+
 // RC17 · esportazione Excel/PDF per listone e lista personale
 function exportRows(scope='full'){
   const source=scope==='mine'?players.filter(p=>isMyChoice(profile(p.id))):players.slice();

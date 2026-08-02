@@ -9,7 +9,7 @@
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC17</title>
+  <title>Fanta Conte RC18</title>
 </head>
 <body>
 <header class="app-header">
@@ -17,7 +17,7 @@
     <div class="brand-mark" aria-hidden="true">FC</div>
     <div class="brand-copy">
       <p class="eyebrow">FANTA CONTE · ASTA CONTROL</p>
-      <h1>Fanta Conte <span>RC17</span></h1>
+      <h1>Fanta Conte <span>RC18</span></h1>
     </div>
     <button id="toggleSetup" class="icon-button" type="button" aria-label="Impostazioni">⚙</button>
   </div>
@@ -143,12 +143,18 @@
       <label class="secondary-btn">Ripristina<input id="backupInput" type="file" accept=".json" hidden></label>
     </div>
     <div class="export-tools">
-      <div class="export-title"><strong>Fogli per l’asta</strong><small>Esporta e stampa il listone completo o la tua guida personale</small></div>
-      <div class="export-grid">
-        <button id="excelFull" class="export-btn excel" type="button"><span>▦</span><b>Excel Listone</b><small>Tutti i giocatori</small></button>
-        <button id="pdfFull" class="export-btn pdf" type="button"><span>▤</span><b>PDF Listone</b><small>Foglio da depennare</small></button>
-        <button id="excelMine" class="export-btn excel" type="button"><span>★</span><b>Excel Mia lista</b><small>Scelte e note</small></button>
-        <button id="pdfMine" class="export-btn pdf" type="button"><span>★</span><b>PDF Mia lista</b><small>Guida personale</small></button>
+      <button id="togglePrintTools" class="export-toggle" type="button" aria-expanded="false" aria-controls="printToolsBody">
+        <span class="export-toggle-icon">▤</span>
+        <span class="export-toggle-copy"><strong>Fogli per l’asta</strong><small>Esporta e stampa il listone o la tua guida personale</small></span>
+        <span class="export-toggle-arrow" aria-hidden="true">⌄</span>
+      </button>
+      <div id="printToolsBody" class="export-body" hidden>
+        <div class="export-grid">
+          <button id="excelFull" class="export-btn excel" type="button"><span>▦</span><b>Excel Listone</b><small>Tutti i giocatori</small></button>
+          <button id="pdfFull" class="export-btn pdf" type="button"><span>▤</span><b>PDF Listone</b><small>Foglio da depennare</small></button>
+          <button id="excelMine" class="export-btn excel" type="button"><span>★</span><b>Excel Mia lista</b><small>Scelte e note</small></button>
+          <button id="pdfMine" class="export-btn pdf" type="button"><span>★</span><b>PDF Mia lista</b><small>Guida personale</small></button>
+        </div>
       </div>
     </div>
   </section>

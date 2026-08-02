@@ -1,8 +1,8 @@
-FANTA CONTE RC17
+FANTA CONTE RC18
 
 Versione operativa con Listone, La mia lista, backup/ripristino ed esportazione Excel/PDF.
 
-NOVITÀ RC17
+NOVITÀ RC18
 - Excel Listone completo
 - PDF Listone completo, stampabile e depennabile
 - Excel La mia lista con priorità, stelle, massimo e note
