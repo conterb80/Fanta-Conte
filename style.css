@@ -484,3 +484,100 @@ body[data-view-mode="auction"] .panel-launchers{display:none}
   .panel-launchers button{min-height:44px;border-radius:12px}
   .panel-launchers button>small{font-size:.52rem}
 }
+
+/* =========================================================
+   RC14 · GERARCHIA VISIVA E CONTESTO ATTIVO
+   Pulsanti riconoscibili, pannelli distinti e listone protagonista
+   ========================================================= */
+:root{
+  --auction-accent:#66a8df;
+  --assistant-accent:#d5ad58;
+  --live-accent:#d47783;
+  --tools-accent:#9a8be8;
+  --list-accent:#63b982;
+}
+
+/* Launcher più leggibili e immediatamente distinguibili */
+.panel-launchers{gap:7px}
+.panel-launchers button{
+  min-height:57px;padding:8px 7px 7px;
+  grid-template-columns:28px 1fr 14px;
+  grid-template-areas:"icon label arrow";
+  border-radius:14px;text-align:left;
+  background:linear-gradient(145deg,#151a27,#111620);
+  border-color:rgba(184,194,216,.13)
+}
+.panel-launchers button>span{
+  width:27px;height:27px;padding:0;display:grid;place-items:center;
+  border-radius:9px;font-size:.88rem;background:rgba(255,255,255,.045)
+}
+.panel-launchers button>small{
+  padding:0 4px;font-size:.66rem;font-weight:800;color:#c9cfda;
+  white-space:normal;line-height:1.08
+}
+.panel-launchers button>b{padding:0;font-size:.72rem}
+.panel-launchers button[data-panel="asta"]>span{color:var(--auction-accent);background:rgba(102,168,223,.10)}
+.panel-launchers button[data-panel="obiettivi"]>span{color:var(--assistant-accent);background:rgba(213,173,88,.10)}
+.panel-launchers button[data-panel="livePanel"]>span{color:var(--live-accent);background:rgba(212,119,131,.10)}
+.panel-launchers button[data-panel="strumenti"]>span{color:var(--tools-accent);background:rgba(154,139,232,.11)}
+.panel-launchers button[data-panel="asta"].open{border-color:rgba(102,168,223,.42);background:rgba(102,168,223,.11)}
+.panel-launchers button[data-panel="obiettivi"].open{border-color:rgba(213,173,88,.42);background:rgba(213,173,88,.10)}
+.panel-launchers button[data-panel="livePanel"].open{border-color:rgba(212,119,131,.42);background:rgba(212,119,131,.10)}
+.panel-launchers button[data-panel="strumenti"].open{border-color:rgba(154,139,232,.42);background:rgba(154,139,232,.11)}
+.panel-launchers button.open>small{color:#f5f7fa}
+
+/* Ogni pannello ha una propria identità senza diventare acceso */
+#asta{--context-accent:var(--auction-accent)}
+#obiettivi{--context-accent:var(--assistant-accent)}
+#livePanel{--context-accent:var(--live-accent)}
+#strumenti{--context-accent:var(--tools-accent)}
+.optional-panel:not(.panel-collapsed){
+  border-color:color-mix(in srgb,var(--context-accent) 28%,transparent);
+  background:
+    linear-gradient(145deg,color-mix(in srgb,var(--context-accent) 8%,#171c29),#121722 70%);
+  box-shadow:inset 3px 0 0 color-mix(in srgb,var(--context-accent) 66%,transparent),0 9px 24px rgba(0,0,0,.17)
+}
+.optional-panel:not(.panel-collapsed) .section-icon{
+  color:var(--context-accent);background:color-mix(in srgb,var(--context-accent) 12%,transparent)
+}
+
+/* Listone evidenziato quando è la vista principale */
+.list-heading{
+  margin-top:2px;padding:10px 12px 8px;border-radius:15px 15px 0 0;
+  transition:background .22s ease,border-color .22s ease
+}
+.player-list{
+  padding:8px;border-radius:0 0 18px 18px;
+  transition:background .22s ease,box-shadow .22s ease
+}
+body[data-active-panel="list"] .list-heading{
+  background:linear-gradient(90deg,rgba(99,185,130,.14),rgba(99,185,130,.035));
+  border:1px solid rgba(99,185,130,.20);border-bottom:0
+}
+body[data-active-panel="list"] .list-heading strong{color:#dff1e5}
+body[data-active-panel="list"] .player-list{
+  background:linear-gradient(155deg,rgba(38,88,61,.18),rgba(13,19,28,.30));
+  border:1px solid rgba(99,185,130,.20);border-top:0;
+  box-shadow:inset 3px 0 0 rgba(99,185,130,.48)
+}
+body[data-active-panel="list"] .card{background:linear-gradient(155deg,#171e28,#121923)}
+
+/* Contesto generale: lieve tinta quando un pannello è aperto */
+body[data-active-panel="asta"] main{--page-context:rgba(102,168,223,.025)}
+body[data-active-panel="obiettivi"] main{--page-context:rgba(213,173,88,.025)}
+body[data-active-panel="livePanel"] main{--page-context:rgba(212,119,131,.025)}
+body[data-active-panel="strumenti"] main{--page-context:rgba(154,139,232,.025)}
+main{background:linear-gradient(var(--page-context,transparent),var(--page-context,transparent));transition:background .2s ease}
+
+@media(max-width:650px){
+  .panel-launchers button{min-height:52px;padding:7px 5px;grid-template-columns:25px 1fr 11px}
+  .panel-launchers button>span{width:24px;height:24px;border-radius:8px;font-size:.78rem}
+  .panel-launchers button>small{font-size:.59rem}
+  .list-heading{padding:9px 10px 7px}
+  .player-list{padding:6px}
+}
+@media(max-width:390px){
+  .panel-launchers{grid-template-columns:repeat(2,1fr)}
+  .panel-launchers button{min-height:48px}
+  .panel-launchers button>small{font-size:.63rem}
+}

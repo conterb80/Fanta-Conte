@@ -1,1 +1,2 @@
-RC13 · Modalità Preparazione/Asta. Il listone diventa la schermata principale; i pannelli operativi sono richiudibili e si aprono solo quando servono. Conserva listone, preferiti, valutazioni, acquisti e backup delle versioni precedenti.
+Fanta Conte RC14
+Gerarchia visiva migliorata: pulsanti operativi più riconoscibili, pannelli con identità cromatica e listone evidenziato quando è la vista principale.

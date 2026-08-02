@@ -250,6 +250,12 @@ $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[
     const arrow=button.querySelector('b');
     if(arrow)arrow.textContent=open?'⌃':'⌄';
   };
+  const syncContext=preferred=>{
+    const opened=launchers.filter(button=>isOpen(panels.get(button.dataset.panel)));
+    document.body.dataset.activePanel=preferred&&isOpen(panels.get(preferred))
+      ? preferred
+      : (opened.at(-1)?.dataset.panel||'list');
+  };
   const setPanel=(id,open,{scroll=false}={})=>{
     const panel=panels.get(id);
     if(!panel)return;
@@ -257,6 +263,7 @@ $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[
     panel.setAttribute('aria-hidden',String(!open));
     const button=launchers.find(x=>x.dataset.panel===id);
     if(button)syncLauncher(button);
+    syncContext(open?id:null);
     if(open&&scroll)setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),80);
   };
   const applyMode=(next,{save=true}={})=>{
@@ -293,4 +300,5 @@ $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[
   }));
 
   applyMode(mode,{save:false});
+  syncContext();
 })();
