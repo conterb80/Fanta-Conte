@@ -11,6 +11,8 @@ let setup=JSON.parse(localStorage.getItem(SETUP_KEY)||'null')||{teamName:'Fanta 
 let activeRole='TUTTI';
 let activePlan='';
 let activePlayer=null;
+let mainView=localStorage.getItem('fanta-conte-main-view-v1')==='mylist'?'mylist':'listone';
+let choiceFilter='ALL';
 
 const $=s=>document.querySelector(s);
 const list=$('#list');
@@ -26,6 +28,8 @@ function ownerIsMine(x){return !!x.isMine || (!!x.bought && norm(x.buyOwner)===n
 function num(v){const n=Number(v);return Number.isFinite(n)?n:0}
 function roleLabel(r){return {P:'Portieri',D:'Difensori',C:'Centrocampisti',A:'Attaccanti'}[r]||r}
 function planLabel(level){return {ASSOLUTO:'🔴 Priorità 1',PRIORITA2:'🟡 Priorità 2',PIANOB:'🔵 Piano B'}[level]||''}
+function isMyChoice(x){return !!(x.fav||x.target||x.targetLevel||num(x.priority)>0||x.tier||x.maxPrice!==''||x.notes)}
+function choiceMatches(x){if(choiceFilter==='ALL')return true;if(choiceFilter==='FAV')return !!x.fav;return x.targetLevel===choiceFilter}
 
 function filtered(){
   const term=norm(q.value);
@@ -37,7 +41,8 @@ function filtered(){
     const role=activeRole==='TUTTI'||p.r===activeRole||(activeRole==='PREFERITI'&&x.fav)||(activeRole==='OBIETTIVI'&&(x.target||x.targetLevel));
     const status=availability==='ALL'||(availability==='AVAILABLE'&&!x.bought)||(availability==='BOUGHT'&&x.bought)||(availability==='MINE'&&ownerIsMine(x));
     const plan=!activePlan||x.targetLevel===activePlan;
-    return text&&role&&status&&plan&&(!team||p.t===team);
+    const view=mainView==='listone'||(isMyChoice(x)&&choiceMatches(x));
+    return text&&role&&status&&plan&&view&&(!team||p.t===team);
   });
   const sort=$('#sortBy').value;
   rows.sort((a,b)=>{
@@ -75,6 +80,8 @@ function dashboard(){
   $('#countFav').textContent=players.filter(p=>profile(p.id).fav&&!profile(p.id).bought).length;
   $('#countTarget').textContent=players.filter(p=>(profile(p.id).target||profile(p.id).targetLevel)&&!profile(p.id).bought).length;
   $('#countBought').textContent=bought.length;
+  const mineCount=players.filter(p=>isMyChoice(profile(p.id))).length;
+  const myCountEl=$('#myListCount');if(myCountEl)myCountEl.textContent=mineCount;
   $('#budgetDisplay').textContent=setup.budget;
   $('#spentBudget').textContent=spent;
   $('#remainingBudget').textContent=remaining;
@@ -142,14 +149,20 @@ function verdictFor(p,x){
 
 function render(){
   const rows=filtered();
-  list.innerHTML=rows.length?'':'<div class="empty">Nessun giocatore trovato con questi filtri.</div>';
+  const mine=mainView==='mylist';
+  document.body.dataset.mainView=mainView;
+  const title=$('#listTitle'),subtitle=$('#listSubtitle'),visible=$('#visibleCount');
+  if(title)title.textContent=mine?'La mia lista':'Listone giocatori';
+  if(subtitle)subtitle.textContent=mine?'Le tue scelte, ordinate e colorate per priorità':'Tocca una scheda per aggiungerla alle tue scelte';
+  if(visible)visible.textContent=rows.length;
+  list.innerHTML=rows.length?'':`<div class="empty">${mine?'La tua lista è ancora vuota. Apri un giocatore dal Listone e assegna una priorità, una stella o una valutazione.':'Nessun giocatore trovato con questi filtri.'}</div>`;
   const frag=document.createDocumentFragment();
   rows.forEach(p=>{
     const x=profile(p.id);
     const diff=num(p.diff)>0?`+${p.diff}`:p.diff;
     const verdict=verdictFor(p,x);
     const card=document.createElement('article');
-    card.className='card'+(x.bought?' bought':'')+(ownerIsMine(x)?' mine':'')+(x.never?' avoided':'');
+    card.className='card'+(x.bought?' bought':'')+(ownerIsMine(x)?' mine':'')+(x.never?' avoided':'')+(x.targetLevel?' choice-'+x.targetLevel.toLowerCase():'')+(mainView==='mylist'?' personal-card':'');
     card.innerHTML=`
       <div class="role">${p.r}</div>
       <button class="open-player" type="button">
@@ -199,8 +212,26 @@ $('#playerForm').addEventListener('submit',()=>{
 
 q.addEventListener('input',render);$('#teamFilter').addEventListener('change',render);$('#sortBy').addEventListener('change',render);$('#availabilityFilter').addEventListener('change',render);
 $('#roleTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;activeRole=b.dataset.role;document.querySelectorAll('#roleTabs button').forEach(x=>x.classList.toggle('active',x===b));render()});
-$('.plan-cards').addEventListener('click',e=>{const b=e.target.closest('button[data-plan]');if(!b)return;activePlan=activePlan===b.dataset.plan?'':b.dataset.plan;activeRole='OBIETTIVI';document.querySelectorAll('#roleTabs button').forEach(x=>x.classList.toggle('active',x.dataset.role==='OBIETTIVI'));$('#availabilityFilter').value='AVAILABLE';render()});
-$('#showAllPlayers').addEventListener('click',()=>{activePlan='';activeRole='TUTTI';q.value='';$('#availabilityFilter').value='AVAILABLE';document.querySelectorAll('#roleTabs button').forEach(x=>x.classList.toggle('active',x.dataset.role==='TUTTI'));render()});
+$('.plan-cards').addEventListener('click',e=>{const b=e.target.closest('button[data-plan]');if(!b)return;activePlan=activePlan===b.dataset.plan?'':b.dataset.plan;mainView='mylist';choiceFilter=b.dataset.plan;document.querySelectorAll('#choiceTabs button').forEach(x=>x.classList.toggle('active',x.dataset.choice===choiceFilter));setMainView('mylist',{scroll:false});$('#availabilityFilter').value='AVAILABLE';render()});
+$('#showAllPlayers').addEventListener('click',()=>{activePlan='';activeRole='TUTTI';choiceFilter='ALL';q.value='';$('#availabilityFilter').value='AVAILABLE';document.querySelectorAll('#roleTabs button').forEach(x=>x.classList.toggle('active',x.dataset.role==='TUTTI'));setMainView('listone',{scroll:false})});
+
+function setMainView(view,{scroll=true}={}){
+  mainView=view==='mylist'?'mylist':'listone';
+  localStorage.setItem('fanta-conte-main-view-v1',mainView);
+  if(mainView==='listone')choiceFilter='ALL';
+  $('#listoneView')?.classList.toggle('active',mainView==='listone');
+  $('#myListView')?.classList.toggle('active',mainView==='mylist');
+  $('#listoneView')?.setAttribute('aria-selected',String(mainView==='listone'));
+  $('#myListView')?.setAttribute('aria-selected',String(mainView==='mylist'));
+  $('#choiceTabs').hidden=mainView!=='mylist';
+  document.querySelectorAll('.bottom-nav [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===mainView));
+  render();
+  if(scroll)setTimeout(()=>document.getElementById('listone')?.scrollIntoView({behavior:'smooth',block:'start'}),40);
+}
+$('#listoneView')?.addEventListener('click',()=>setMainView('listone'));
+$('#myListView')?.addEventListener('click',()=>setMainView('mylist'));
+document.querySelectorAll('.bottom-nav [data-view]').forEach(b=>b.addEventListener('click',()=>setMainView(b.dataset.view)));
+$('#choiceTabs')?.addEventListener('click',e=>{const b=e.target.closest('button[data-choice]');if(!b)return;choiceFilter=b.dataset.choice;document.querySelectorAll('#choiceTabs button').forEach(x=>x.classList.toggle('active',x===b));render()});
 
 $('#toggleSetup').addEventListener('click',()=>{$('#setupPanel').hidden=!$('#setupPanel').hidden});
 function loadSetupForm(){ $('#myTeamName').value=setup.teamName;$('#totalBudget').value=setup.budget;for(const r of ['P','D','C','A'])$('#slots'+r).value=setup.slots[r] }
@@ -216,89 +247,26 @@ $('#auctionLog').addEventListener('click',e=>{const id=e.target?.dataset?.undo;i
 $('#exportBackup').addEventListener('click',()=>{const payload={version:BACKUP_VERSION,createdAt:new Date().toISOString(),players,state,meta,setup};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Fanta-Conte-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);toast('Backup creato')});
 $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!data||!Array.isArray(data.players)||typeof data.state!=='object')throw new Error('Backup non valido');players=data.players;state=data.state||{};meta=data.meta||meta;setup=data.setup||setup;localStorage.setItem(LIST_KEY,JSON.stringify(players));localStorage.setItem(STATE_KEY,JSON.stringify(state));localStorage.setItem(META_KEY,JSON.stringify(meta));saveSetup();loadSetupForm();buildTeams();render();toast('Backup ripristinato')}catch(err){toast('Errore nel backup: '+err.message,5000)}e.target.value=''});
 
-// RC13 · modalità Preparazione/Asta e stato navigazione
+// RC15 · pannelli operativi secondari a comparsa
 (()=>{
-  const links=[...document.querySelectorAll('.bottom-nav a[href^="#"]')];
-  const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
-  const setActive=id=>links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
-  links.forEach(a=>a.addEventListener('click',()=>setActive(a.getAttribute('href').slice(1))));
-  if('IntersectionObserver'in window){
-    const observer=new IntersectionObserver(entries=>{
-      const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
-      if(visible)setActive(visible.target.id);
-    },{rootMargin:'-25% 0px -58% 0px',threshold:[.05,.2,.5]});
-    sections.forEach(s=>observer.observe(s));
-  }
-  setActive('listone');
-})();
-
-
-// RC13 · listone protagonista e pannelli operativi a comparsa
-(()=>{
-  const MODE_KEY='fanta-conte-view-mode-v1';
-  const prepButton=document.getElementById('prepMode');
-  const auctionButton=document.getElementById('auctionMode');
   const launchers=[...document.querySelectorAll('.panel-launchers [data-panel]')];
   const panels=new Map(launchers.map(button=>[button.dataset.panel,document.getElementById(button.dataset.panel)]));
-  let mode=localStorage.getItem(MODE_KEY)==='auction'?'auction':'prep';
-
-  const isOpen=panel=>panel && !panel.classList.contains('panel-collapsed');
-  const syncLauncher=button=>{
-    const open=isOpen(panels.get(button.dataset.panel));
-    button.classList.toggle('open',open);
-    button.setAttribute('aria-expanded',String(open));
-    const arrow=button.querySelector('b');
-    if(arrow)arrow.textContent=open?'⌃':'⌄';
-  };
-  const syncContext=preferred=>{
-    const opened=launchers.filter(button=>isOpen(panels.get(button.dataset.panel)));
-    document.body.dataset.activePanel=preferred&&isOpen(panels.get(preferred))
-      ? preferred
-      : (opened.at(-1)?.dataset.panel||'list');
-  };
   const setPanel=(id,open,{scroll=false}={})=>{
-    const panel=panels.get(id);
-    if(!panel)return;
+    const panel=panels.get(id);if(!panel)return;
     panel.classList.toggle('panel-collapsed',!open);
     panel.setAttribute('aria-hidden',String(!open));
     const button=launchers.find(x=>x.dataset.panel===id);
-    if(button)syncLauncher(button);
-    syncContext(open?id:null);
-    if(open&&scroll)setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),80);
+    if(button){button.classList.toggle('open',open);button.setAttribute('aria-expanded',String(open));const arrow=button.querySelector('b');if(arrow)arrow.textContent=open?'⌃':'⌄'}
+    if(open&&scroll)setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),70);
   };
-  const applyMode=(next,{save=true}={})=>{
-    mode=next;
-    document.body.dataset.viewMode=mode;
-    prepButton.classList.toggle('active',mode==='prep');
-    auctionButton.classList.toggle('active',mode==='auction');
-    prepButton.setAttribute('aria-pressed',String(mode==='prep'));
-    auctionButton.setAttribute('aria-pressed',String(mode==='auction'));
-    if(mode==='prep'){
-      ['asta','obiettivi','livePanel','strumenti'].forEach(id=>setPanel(id,false));
-    }else{
-      ['asta','obiettivi','livePanel'].forEach(id=>setPanel(id,true));
-      setPanel('strumenti',false);
-    }
-    if(save)localStorage.setItem(MODE_KEY,mode);
-  };
-
   launchers.forEach(button=>button.addEventListener('click',()=>{
-    const id=button.dataset.panel;
-    setPanel(id,!isOpen(panels.get(id)),{scroll:!isOpen(panels.get(id))});
+    const panel=panels.get(button.dataset.panel);const open=panel?.classList.contains('panel-collapsed');
+    setPanel(button.dataset.panel,open,{scroll:open});
   }));
-  prepButton.addEventListener('click',()=>{applyMode('prep');document.getElementById('listone')?.scrollIntoView({behavior:'smooth',block:'start'})});
-  auctionButton.addEventListener('click',()=>{applyMode('auction');document.getElementById('asta')?.scrollIntoView({behavior:'smooth',block:'start'})});
-
-  // La navigazione inferiore apre il pannello necessario prima dello scorrimento.
   document.querySelectorAll('.bottom-nav a[href^="#"]').forEach(link=>link.addEventListener('click',event=>{
-    const id=link.getAttribute('href').slice(1);
-    if(panels.has(id)){
-      event.preventDefault();
-      setPanel(id,true);
-      setTimeout(()=>panels.get(id).scrollIntoView({behavior:'smooth',block:'start'}),60);
-    }
+    const id=link.getAttribute('href').slice(1);if(!panels.has(id))return;
+    event.preventDefault();setPanel(id,true);setTimeout(()=>panels.get(id).scrollIntoView({behavior:'smooth',block:'start'}),60);
   }));
-
-  applyMode(mode,{save:false});
-  syncContext();
+  ['asta','obiettivi','livePanel','strumenti'].forEach(id=>setPanel(id,false));
+  setMainView(mainView,{scroll:false});
 })();

@@ -9,7 +9,7 @@
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC14</title>
+  <title>Fanta Conte RC16</title>
 </head>
 <body>
 <header class="app-header">
@@ -17,7 +17,7 @@
     <div class="brand-mark" aria-hidden="true">FC</div>
     <div class="brand-copy">
       <p class="eyebrow">FANTA CONTE · ASTA CONTROL</p>
-      <h1>Fanta Conte <span>RC14</span></h1>
+      <h1>Fanta Conte <span>RC16</span></h1>
     </div>
     <button id="toggleSetup" class="icon-button" type="button" aria-label="Impostazioni">⚙</button>
   </div>
@@ -31,19 +31,26 @@
     <div><strong id="countBought">0</strong><span>Acquistati</span></div>
   </section>
 
-  <div class="mode-switch" role="group" aria-label="Modalità di utilizzo">
-    <button id="prepMode" class="active" type="button"><span>☰</span> Preparazione</button>
-    <button id="auctionMode" type="button"><span>◈</span> Modalità asta</button>
+  <div class="main-view-switch" role="tablist" aria-label="Vista principale">
+    <button id="listoneView" class="active" type="button" role="tab" aria-selected="true"><span>☷</span><b>Listone</b><small>Tutti i giocatori</small></button>
+    <button id="myListView" type="button" role="tab" aria-selected="false"><span>★</span><b>La mia lista</b><small>Le tue scelte</small><em id="myListCount">0</em></button>
   </div>
 </header>
 
 <main>
   <section class="controls command-bar" id="listone">
+    <div class="role-filter-title"><span>Ruoli</span><small>Filtra i giocatori della vista attiva</small></div>
     <div class="role-tabs" id="roleTabs">
       <button class="active" data-role="TUTTI">Tutti</button>
       <button data-role="P">P</button><button data-role="D">D</button>
       <button data-role="C">C</button><button data-role="A">A</button>
-      <button data-role="PREFERITI">★</button><button data-role="OBIETTIVI">🎯</button>
+    </div>
+    <div class="choice-tabs" id="choiceTabs" hidden>
+      <button class="active" data-choice="ALL">Tutte</button>
+      <button data-choice="ASSOLUTO"><i class="dot p1"></i>Priorità 1</button>
+      <button data-choice="PRIORITA2"><i class="dot p2"></i>Priorità 2</button>
+      <button data-choice="PIANOB"><i class="dot pb"></i>Piano B</button>
+      <button data-choice="FAV">★ Preferiti</button>
     </div>
     <div class="sort-row three">
       <select id="availabilityFilter" aria-label="Disponibilità">
@@ -137,15 +144,16 @@
     </div>
   </section>
 
-  <div class="list-heading">
-    <div><strong>Listone giocatori</strong><small>Tocca una scheda per modificarla</small></div>
+  <div class="list-heading" id="playersHeading">
+    <div><strong id="listTitle">Listone giocatori</strong><small id="listSubtitle">Tocca una scheda per aggiungerla alle tue scelte</small></div>
+    <span id="visibleCount" class="visible-count">0</span>
   </div>
   <section id="list" class="player-list" aria-live="polite"></section>
 </main>
 
 <nav class="bottom-nav" aria-label="Navigazione rapida">
-  <a href="#listone"><span>⌕</span><small>Listone</small></a>
-  <a href="#obiettivi"><span>★</span><small>Obiettivi</small></a>
+  <button type="button" data-view="listone" class="active"><span>☷</span><small>Listone</small></button>
+  <button type="button" data-view="mylist"><span>★</span><small>La mia lista</small></button>
   <a href="#asta"><span>◈</span><small>Asta</small></a>
   <a href="#strumenti"><span>⚙</span><small>Strumenti</small></a>
 </nav>
