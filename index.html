@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#101826">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css?v=16">
-  <title>Guida Asta Conte • RC13 Scout Live</title>
+  <link rel="stylesheet" href="style.css?v=15">
+  <title>Guida Asta Conte • RC15 Team Intelligence</title>
 </head>
 <body>
 <header>
@@ -21,9 +21,9 @@
 <main>
   <section class="hero">
     <div>
-      <span class="pill">RC13 • SCOUT LIVE</span>
+      <span class="pill">RC15 • TEAM INTELLIGENCE</span>
       <h2>Dalla rosa alla strategia d’asta.</h2>
-      <p>Centro mercato, alert sulle variazioni e diario aggiornamenti per seguire ogni cambiamento importante.</p>
+      <p>Visione completa delle squadre, copertura rose e priorità d’asta in un unico centro operativo.</p>
     </div>
     <div class="stats">
       <b id="teamCount">20</b><span>squadre</span>
@@ -33,7 +33,7 @@
   </section>
 
   <section class="globalScout">
-    <div class="scoutSearchHead"><div><small>SCOUT GLOBALE</small><strong>Trova subito un giocatore</strong></div><span>RC13</span></div>
+    <div class="scoutSearchHead"><div><small>SCOUT GLOBALE</small><strong>Trova subito un giocatore</strong></div><span>RC14</span></div>
     <input id="playerSearch" autocomplete="off" placeholder="Cerca giocatore: Scalvini, Scamacca…">
     <div id="playerSearchResults" class="playerSearchResults hidden"></div>
   </section>
@@ -51,6 +51,12 @@
       <div><h3>Serie A 2026/27</h3><p>Apri una squadra per preparare la scheda.</p></div>
       <input id="search" placeholder="Cerca squadra">
     </div>
+    <section class="teamIntelligenceBar" aria-label="Copertura guida squadre">
+      <div><small>COPERTURA GUIDA</small><b id="coverageTeams">0/20</b><span>squadre con dati</span></div>
+      <div><small>GIOCATORI</small><b id="coveragePlayers">0</b><span>nelle rose</span></div>
+      <div><small>PRONTE ASTA</small><b id="readyTeams">0</b><span>schede complete</span></div>
+    </section>
+    <div class="teamFilterBar"><button class="teamFilter active" data-team-filter="all">Tutte</button><button class="teamFilter" data-team-filter="ready">Pronte</button><button class="teamFilter" data-team-filter="partial">Da completare</button><button class="teamFilter" data-team-filter="watch">Con obiettivi</button></div>
     <div id="teamGrid" class="grid"></div>
   </section>
 
@@ -133,6 +139,6 @@
 </div>
 
 <input type="file" id="fileInput" accept=".json,application/json" hidden>
-<script src="app.js?v=16"></script>
+<script src="app.js?v=15"></script>
 </body>
 </html>

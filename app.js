@@ -1,7 +1,7 @@
 const teams=['Atalanta','Bologna','Cagliari','Como','Fiorentina','Frosinone','Genoa','Inter','Juventus','Lazio','Lecce','Milan','Monza','Napoli','Parma','Roma','Sassuolo','Torino','Udinese','Venezia'];
 const blank=()=>({coach:'',module:'',formation:'',lineup:[],roster:[],penalties:'',freeKicks:'',corners:'',arrivals:'',departures:'',talks:'',recommended:'',bets:'',young:'',reliable:'',avoid:'',watch:'',notes:'',updated:'Da compilare'});
 const base=Object.fromEntries(teams.map(t=>[t,blank()]));
-const DATA_VERSION=13;
+const DATA_VERSION=15;
 const editorialDefaults={
   Atalanta:{
     coach:'Maurizio Sarri',module:'4-3-3',
@@ -117,6 +117,7 @@ const saveAuctionPlan=()=>localStorage.setItem('gac-auction-plan',JSON.stringify
 let rosterFilter='all';
 let rosterStatusFilter='all';
 let rosterQuery='';
+let teamFilter='all';
 
 const grid=document.querySelector('#teamGrid');
 const modal=document.querySelector('#modal');
@@ -153,17 +154,36 @@ function renderPlayerSearch(query=''){
   box.innerHTML=items.length?items.map(x=>{const s=profileFor(x.name);const initials=x.name.split(' ').map(v=>v[0]).slice(0,2).join('').toUpperCase();return `<button type="button" class="searchPlayerResult" data-team="${esc(x.team)}" data-player="${esc(x.name)}"><span class="searchAvatar">${esc(initials)}</span><span><b>${esc(x.name)}</b><small>${esc(x.team)} • ${esc(x.role)} • ${esc(x.status)}</small></span><em>${esc(s.score)}<small>/100</small></em></button>`}).join(''):'<div class="searchEmpty">Nessun giocatore trovato</div>';
   box.querySelectorAll('.searchPlayerResult').forEach(btn=>btn.onclick=()=>{box.classList.add('hidden');openPlayer(btn.dataset.team,btn.dataset.player)});
 }
+function teamReadiness(d){
+  const checks=[Boolean(d.coach),Boolean(d.module),Boolean(d.formation),Boolean((d.roster||[]).length),Boolean(d.recommended||d.bets||d.watch),Boolean(d.penalties||d.freeKicks||d.corners)];
+  const filled=checks.filter(Boolean).length;
+  return {filled,ready:filled>=5,partial:filled<5,hasWatch:Boolean(d.watch)};
+}
+function renderCoverage(){
+  const covered=teams.filter(t=>teamReadiness(data[t]).filled>0).length;
+  const ready=teams.filter(t=>teamReadiness(data[t]).ready).length;
+  const players=teams.reduce((n,t)=>n+(data[t].roster||[]).length,0);
+  document.querySelector('#coverageTeams').textContent=`${covered}/20`;
+  document.querySelector('#coveragePlayers').textContent=players;
+  document.querySelector('#readyTeams').textContent=ready;
+}
 function renderTeams(q=''){
   grid.innerHTML='';
-  teams.filter(t=>t.toLowerCase().includes(q.toLowerCase())).forEach(t=>{
-    const d=data[t];
-    const filled=[d.formation,d.arrivals,d.recommended,d.bets,d.young,d.watch].filter(Boolean).length;
-    const b=document.createElement('button');
-    b.className='team';
-    b.innerHTML=`<div class="teamTop"><strong>${t}</strong><span class="completion">${filled}/6</span></div><small>${esc(d.updated||'Da compilare')}</small><div class="teamBadges">${d.arrivals?'<i>Mercato</i>':''}${d.watch?'<i>Obiettivi</i>':''}${d.formation?'<i>Formazione</i>':''}</div>`;
-    b.onclick=()=>openTeam(t);
-    grid.appendChild(b);
+  const filtered=teams.filter(t=>{
+    const r=teamReadiness(data[t]);
+    const filterOk=teamFilter==='all'||(teamFilter==='ready'&&r.ready)||(teamFilter==='partial'&&r.partial)||(teamFilter==='watch'&&r.hasWatch);
+    return filterOk&&t.toLowerCase().includes(q.toLowerCase());
   });
+  filtered.forEach(t=>{
+    const d=data[t],r=teamReadiness(d);
+    const b=document.createElement('button');
+    b.className=`team ${r.ready?'teamReady':'teamPartial'}`;
+    const status=r.ready?'Pronta asta':r.filled?'In lavorazione':'Da compilare';
+    b.innerHTML=`<div class="teamTop"><strong>${t}</strong><span class="completion">${r.filled}/6</span></div><small>${esc(d.updated||'Da compilare')}</small><div class="teamProgress"><i style="width:${Math.round(r.filled/6*100)}%"></i></div><div class="teamBadges"><i class="readiness ${r.ready?'ready':'partial'}">${status}</i>${d.arrivals?'<i>Mercato</i>':''}${d.watch?'<i>Obiettivi</i>':''}${d.formation?'<i>Formazione</i>':''}</div>`;
+    b.onclick=()=>openTeam(t);grid.appendChild(b);
+  });
+  if(!filtered.length)grid.innerHTML='<div class="empty"><strong>Nessuna squadra in questo filtro</strong><p>Cambia filtro oppure completa una scheda.</p></div>';
+  renderCoverage();
 }
 
 
@@ -182,7 +202,7 @@ function smartUpdateTeam(team){
   ['recommended','bets','young','reliable','avoid','watch','notes'].forEach(k=>personal[k]=data[team][k]||defaults[k]||'');
   data[team]={...blank(),...data[team],...defaults,...personal,updated:'Smart update eseguito oggi'};
   persist();refreshAll();openTeam(team,'formation');
-  alert(`${team} aggiornata con i dati editoriali inclusi nella RC13. Le tue note e valutazioni sono state conservate.`);
+  alert(`${team} aggiornata con i dati editoriali inclusi nella RC15. Le tue note e valutazioni sono state conservate.`);
 }
 function renderAuctionPlan(){
   const budgetInput=document.querySelector('#auctionBudget'),spentInput=document.querySelector('#auctionSpent');
@@ -218,7 +238,7 @@ function rosterHtml(d,t){
     return `<div class="roleBlock" data-role="${role}"><h4>${icons[role]} ${role}i <span>${players.length}</span></h4>${players.map(p=>{
       const selected=auctionList.some(x=>x.team===t&&x.name===p.name);const st=profileFor(p.name);
       const searchable=[p.name,p.role,p.status,...(p.tags||[])].join(' ').toLowerCase();
-      return `<div class="playerCard" data-role="${esc(role)}" data-status="${esc(p.status)}" data-search="${esc(searchable)}" data-tags="${esc((p.tags||[]).join(' ').toLowerCase())}"><button type="button" class="playerMain playerOpen" data-team="${esc(t)}" data-player="${esc(p.name)}"><div class="playerNameLine"><b>${esc(p.name)}</b><span class="miniScore">${esc(st.score)}</span></div><small class="playerHint">${st.apps} pres. • ${st.goals} gol • ${st.assists} assist • FM ${esc(st.fm)} • ${esc(st.price)} cr.</small><div class="playerMeta"><span class="statusChip ${esc(p.status).toLowerCase().replaceAll(' ','-')}">${esc(p.status)}</span>${(p.tags||[]).map(tag=>`<span class="tagChip">${esc(tag)}</span>`).join('')}</div></button><button type="button" class="starBtn ${selected?'selected':''}" data-team="${esc(t)}" data-player="${esc(p.name)}" aria-label="${selected?'Rimuovi dalla':'Aggiungi alla'} lista asta">${selected?'★':'☆'}</button></div>`;
+      return `<div class="playerCard" data-role="${esc(role)}" data-status="${esc(p.status)}" data-search="${esc(searchable)}" data-tags="${esc((p.tags||[]).join(' ').toLowerCase())}"><button type="button" class="playerMain playerOpen" data-team="${esc(t)}" data-player="${esc(p.name)}"><div class="playerNameLine"><b>${esc(p.name)}</b><span class="miniScore">${esc(st.score)}</span><span class="miniVerdict ${intelligenceFor(st,p).verdictClass}">${intelligenceFor(st,p).verdict}</span></div><small class="playerHint">${st.apps} pres. • ${st.goals} gol • ${st.assists} assist • FM ${esc(st.fm)} • ${esc(st.price)} cr.</small><div class="playerMeta"><span class="statusChip ${esc(p.status).toLowerCase().replaceAll(' ','-')}">${esc(p.status)}</span>${(p.tags||[]).map(tag=>`<span class="tagChip">${esc(tag)}</span>`).join('')}</div></button><button type="button" class="starBtn ${selected?'selected':''}" data-team="${esc(t)}" data-player="${esc(p.name)}" aria-label="${selected?'Rimuovi dalla':'Aggiungi alla'} lista asta">${selected?'★':'☆'}</button></div>`;
     }).join('')}</div>`;
   }).join('');
 }
@@ -258,7 +278,7 @@ function openTeam(t,section='formation'){
   const next=teams[(teamIndex+1)%teams.length];
   view.innerHTML=`
     <div class="teamTitle compactTeamTitle">
-      <small>GUIDA ASTA CONTE • RC13 SCOUT LIVE</small>
+      <small>GUIDA ASTA CONTE • RC15 TEAM INTELLIGENCE</small>
       <div class="teamTitleRow"><button type="button" class="teamStep" data-team="${esc(prev)}" aria-label="Squadra precedente">‹</button><div class="clubIdentity"><span class="clubMark">${esc(t.slice(0,3).toUpperCase())}</span><div class="clubCopy"><h2>${t}</h2><p><span>${esc(d.coach||'Allenatore da definire')}</span><b>${esc(d.module||'Modulo da definire')}</b></p></div></div><button type="button" class="teamStep" data-team="${esc(next)}" aria-label="Squadra successiva">›</button></div>
       ${d.source?`<div class="sourceNote">● ${esc(d.source)} · ${esc(d.updated)}</div>`:''}
       <button type="button" class="smartUpdateBtn" data-smart-update="${esc(t)}">↻ Aggiorna squadra</button>
@@ -324,6 +344,21 @@ function openTeam(t,section='formation'){
   document.querySelector('.sheet').scrollTop=0;
 }
 
+
+function intelligenceFor(profile,player={}){
+  const score=Number(profile.score||0);
+  const starterPct=Number(profile.starterPct||0);
+  const risk=String(profile.risk||'Da valutare');
+  const goals=Number(profile.goals||0),assists=Number(profile.assists||0);
+  const bonusExpected=Math.max(0,Math.round(goals*.75+assists*.65+(player.role==='Portiere'?Math.max(0,8-goals):0)));
+  let priority='C', verdict='MONITORA', verdictClass='watch', action='Aspetta il prezzo giusto';
+  if(score>=88&&starterPct>=85){priority='A';verdict='COMPRA';verdictClass='buy';action='Obiettivo prioritario';}
+  else if(score>=76&&starterPct>=70){priority='B';verdict='SEGUI';verdictClass='follow';action='Rilancia entro il tetto';}
+  if(risk==='Alto'||score<58){priority='D';verdict='EVITA';verdictClass='avoid';action='Solo a prezzo minimo';}
+  const reliability=Math.max(15,Math.min(98,Math.round(starterPct-(risk==='Alto'?22:risk==='Medio'?10:0))));
+  return {priority,verdict,verdictClass,action,bonusExpected,reliability};
+}
+
 function starsHtml(value){
   const full=Math.floor(value||0), half=(value||0)-full>=.5;
   return '★'.repeat(full)+(half?'◐':'')+'☆'.repeat(Math.max(0,5-full-(half?1:0)));
@@ -331,21 +366,24 @@ function starsHtml(value){
 function openPlayer(team,name){
   const p=(data[team]?.roster||[]).find(x=>x.name===name)||{};
   const s=profileFor(name);
+  const intel=intelligenceFor(s,p);
   const selected=auctionList.some(x=>x.team===team&&x.name===name);
   const favorite=conteFavorites.some(x=>x.team===team&&x.name===name);
   const initials=name.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
   const candidates=allRosterPlayers().filter(x=>x.name!==name&&x.role===p.role).slice(0,24);
   const alternatives=(s.alternatives||[]).map(alt=>`<button type="button" class="altPlayer" data-team="${esc(team)}" data-player="${esc(alt)}">${esc(alt)}</button>`).join('')||'<span class="noAlt">Da definire</span>';
   document.querySelector('#playerView').innerHTML=`
-    <div class="playerHubLabel">RC13 • PLAYER HUB</div>
+    <div class="playerHubLabel">RC15 • TEAM INTELLIGENCE</div>
     <div class="playerHero"><div class="playerAvatar">${esc(initials)}</div><div><span class="playerTeam">${esc(team)} • ${esc(p.role||'Ruolo da definire')}</span><h2>${esc(name)}</h2><div class="playerStars">${starsHtml(s.stars)} <small>${s.stars}/5</small></div></div><div class="conteScore"><b>${esc(s.score)}</b><small>CONTE</small></div></div>
     <div class="playerIdentity"><span>${esc(s.tier)}</span><span>${esc(s.age)} anni</span><span>Piede ${esc(s.foot)}</span><span>${esc(p.status||'Da valutare')}</span></div>
+    <section class="decisionCard ${intel.verdictClass}"><div class="decisionMain"><small>DECISIONE CONTE</small><strong>${intel.verdict}</strong><span>${intel.action}</span></div><div class="prioritySeal"><small>PRIORITÀ</small><b>${intel.priority}</b></div></section>
+    <section class="intelligenceStrip"><div><small>INDICE CONTE</small><b>${esc(s.score)}/100</b></div><div><small>TITOLARITÀ</small><b>${esc(s.starterPct)}%</b></div><div><small>AFFIDABILITÀ</small><b>${intel.reliability}%</b></div><div><small>BONUS ATTESI</small><b>${intel.bonusExpected}</b></div></section>
     <section class="hubSection situationHub"><div class="hubTitle"><small>SITUAZIONE ATTUALE</small><strong>Disponibilità e gerarchie</strong></div><div class="situationGrid"><div><span>Titolarità</span><b>${esc(s.starterPct)}%</b><i><u style="width:${Math.max(0,Math.min(100,Number(s.starterPct)||0))}%"></u></i></div><div><span>Condizione</span><b>${esc(s.condition)}</b></div><div><span>Infortuni</span><b>${esc(s.injury)}</b></div><div><span>Trend</span><b>${esc(s.trend)}</b></div></div></section>
     <div class="playerPrice"><span>Budget consigliato</span><b>${esc(s.price)}</b><small>crediti su base 500</small></div>
     <div class="playerKpis seven"><div><span>Pres.</span><b>${s.apps}</b></div><div><span>Minuti</span><b>${s.minutes}</b></div><div><span>Gol</span><b>${s.goals}</b></div><div><span>Assist</span><b>${s.assists}</b></div><div><span>MV</span><b>${s.mv}</b></div><div><span>FM</span><b>${s.fm}</b></div><div><span>Rigori</span><b>${s.pens}</b></div></div>
     <div class="discipline"><span>🟨 ${esc(s.yellow)}</span><span>🟥 ${esc(s.red)}</span></div>
     <div class="playerSignals"><span>${esc(p.status||'Da valutare')}</span><span>${esc(s.trend)}</span><span>Rischio ${esc(s.risk)}</span>${(p.tags||[]).slice(0,3).map(tag=>`<span>${esc(tag)}</span>`).join('')}</div>
-    <section class="conteAdvice"><small>VALUTAZIONE CONTE</small><p>${esc(s.advice)}</p></section>
+    <section class="conteAdvice intelligenceReport"><div class="hubTitle"><small>REPORT SCOUT CONTE</small><strong>Lettura rapida</strong></div><p>${esc(s.advice)}</p><div class="reportSignals"><span class="signal trend">📈 ${esc(s.trend)}</span><span class="signal risk">⚠️ Rischio ${esc(s.risk)}</span><span class="signal ceiling">💰 Tetto ${esc(s.stop)} cr.</span></div></section>
     <section class="hubSection auctionPlan"><div class="hubTitle"><small>STRATEGIA D'ASTA</small><strong>Piano operativo</strong></div><div class="planGrid"><div><span>Fascia ideale</span><b>${esc(s.price)} cr.</b></div><div><span>Tetto massimo</span><b>${esc(s.stop)} cr.</b></div><div class="planWide"><span>Quando rilanciare</span><b>${esc(s.timing)}</b></div><div class="planWide"><span>Alternative</span><div class="altPlayers">${alternatives}</div></div></div></section>
     <section class="compareBox"><div><small>CONFRONTO RAPIDO</small><strong>Confronta con un altro ${esc((p.role||'giocatore').toLowerCase())}</strong></div><select id="compareSelect"><option value="">Scegli giocatore</option>${candidates.map(x=>`<option value="${esc(x.team+'|||'+x.name)}">${esc(x.name)} • ${esc(x.team)}</option>`).join('')}</select><div id="compareResult"></div></section>
     <div class="playerHubActions"><button id="playerFavoriteBtn" class="playerFavoriteBtn ${favorite?'selected':''}">${favorite?'♥ Preferito del Conte':'♡ Preferito del Conte'}</button><button id="playerAuctionBtn" class="playerAuctionBtn ${selected?'selected':''}">${selected?'★ Rimuovi dalla lista asta':'☆ Aggiungi alla lista asta'}</button></div>`;
@@ -489,6 +527,7 @@ document.querySelector('#playerModal').onclick=e=>{if(e.target.id==='playerModal
 modal.onclick=e=>{if(e.target===modal)closeModal()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePlayer();closeModal()}});
 document.querySelector('#search').oninput=e=>renderTeams(e.target.value);
+document.querySelectorAll('.teamFilter').forEach(btn=>btn.onclick=()=>{teamFilter=btn.dataset.teamFilter;document.querySelectorAll('.teamFilter').forEach(x=>x.classList.toggle('active',x===btn));renderTeams(document.querySelector('#search').value);});
 const playerSearch=document.querySelector('#playerSearch');
 if(playerSearch){playerSearch.oninput=e=>renderPlayerSearch(e.target.value);playerSearch.onfocus=e=>renderPlayerSearch(e.target.value);}
 document.addEventListener('click',e=>{const results=document.querySelector('#playerSearchResults');if(results&&!e.target.closest('.globalScout'))results.classList.add('hidden');});
@@ -508,9 +547,9 @@ const fi=document.querySelector('#fileInput');
 document.querySelector('#refreshBtn').onclick=()=>fi.click();
 
 document.querySelector('#exportBtn').onclick=()=>{
-  const payload={app:'Guida Asta Conte',version:'RC13-Scout-Live',exportedAt:new Date().toISOString(),teams:data};
+  const payload={app:'Guida Asta Conte',version:'RC15-Team-Intelligence',exportedAt:new Date().toISOString(),teams:data};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Guida-Asta-Conte-backup-RC13.json';a.click();URL.revokeObjectURL(a.href);
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Guida-Asta-Conte-backup-RC15.json';a.click();URL.revokeObjectURL(a.href);
 };
 fi.onchange=async()=>{
   if(!fi.files[0])return;
