@@ -1,10 +1,15 @@
-FANTA CONTE RC18
+GUIDA ASTA CONTE – RC13 SCOUT LIVE
 
-Versione operativa con Listone, La mia lista, backup/ripristino ed esportazione Excel/PDF.
+Novità:
+- Nuova scheda Scout Live con alert mercato, gerarchie e obiettivi della Lista Asta.
+- Riepilogo immediato di alert, variazioni e giocatori seguiti.
+- Scansione manuale delle variazioni rispetto all’ultima verifica.
+- Diario aggiornamenti personale con note salvate sul dispositivo.
+- Filtri alert per Mercato, Gerarchie e Lista Asta.
+- Struttura, Player Hub e Smart Data della RC12 mantenuti.
 
-NOVITÀ RC18
-- Excel Listone completo
-- PDF Listone completo, stampabile e depennabile
-- Excel La mia lista con priorità, stelle, massimo e note
-- PDF La mia lista, divisa per ruolo e priorità
-- Tutti i dati e le funzioni RC16 restano compatibili
+Installazione GitHub Pages:
+1. Estrai lo ZIP.
+2. Carica tutti gli 8 file nella root del repository.
+3. Sostituisci i file esistenti e fai Commit changes.
+4. Riapri l’app e verifica la presenza della linguetta Scout Live.
