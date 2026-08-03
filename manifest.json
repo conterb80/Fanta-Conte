@@ -1,1 +1,39 @@
-{"name":"Guida Asta Conte RC15 Team Intelligence","short_name":"Asta Conte","start_url":"./","display":"standalone","background_color":"#09111d","theme_color":"#101826","description":"Guida personale Team Intelligence per preparare l'asta Fantacalcio 2026/27","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "Fanta Conte RC13",
+  "short_name": "FantaConte",
+  "description": "Centro operativo personale per l'asta Fantacalcio",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070b12",
+  "theme_color": "#0b1220",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
