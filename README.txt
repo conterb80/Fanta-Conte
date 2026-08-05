@@ -1,10 +1,9 @@
-FANTA CONTE RC18
+FANTA CONTE RC19
 
-Versione operativa con Listone, La mia lista, backup/ripristino ed esportazione Excel/PDF.
+Aggiornamento grafico mirato delle schede giocatore:
+- nome, squadra/ruolo, quotazione, FVM e variazione più grandi e leggibili;
+- pallino priorità più evidente e spostato accanto al nome del giocatore;
+- nessuna modifica alla struttura, ai filtri, alle liste o ai dati salvati.
 
-NOVITÀ RC18
-- Excel Listone completo
-- PDF Listone completo, stampabile e depennabile
-- Excel La mia lista con priorità, stelle, massimo e note
-- PDF La mia lista, divisa per ruolo e priorità
-- Tutti i dati e le funzioni RC16 restano compatibili
+Caricare tutti i file nel repository sostituendo quelli esistenti.
+Aprire poi: https://conterb80.github.io/Fanta-Conte/?v=RC19

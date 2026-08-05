@@ -166,7 +166,7 @@ function render(){
     card.innerHTML=`
       <div class="role">${p.r}</div>
       <button class="open-player" type="button">
-        <div class="player-head"><div class="player-name">${p.n}</div><span class="verdict ${verdict.cls}">${verdict.text}</span></div>
+        <div class="player-head"><div class="player-name-wrap">${x.targetLevel?`<span class="priority-dot ${x.targetLevel.toLowerCase()}" aria-label="${planLabel(x.targetLevel).replace(/^[^ ]+ /,'')}"></span>`:''}<div class="player-name">${p.n}</div></div><span class="verdict ${verdict.cls}">${verdict.text}</span></div>
         <div class="meta">${p.t} · ${p.rm||p.r}</div>
         <div class="official"><span class="pill">Qt. ${p.qa}</span><span class="pill">FVM ${p.fvm}</span><span class="pill ${num(p.diff)>0?'up':num(p.diff)<0?'down':''}">${diff}</span></div>
         <div class="tags">
@@ -272,7 +272,7 @@ $('#backupInput').addEventListener('change',async e=>{const file=e.target.files[
 })();
 
 
-// RC18 · pannello fogli asta richiudibile e sempre non invasivo
+// RC19 · pannello fogli asta richiudibile e sempre non invasivo
 (()=>{
   const toggle=document.getElementById('togglePrintTools');
   const body=document.getElementById('printToolsBody');
