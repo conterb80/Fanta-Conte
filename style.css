@@ -805,3 +805,9 @@ body[data-view-mode="prep"] .list-heading{margin-top:8px}
   .pill,.tag{font-size:.65rem!important;padding:4px 7px!important}
   .priority-dot{width:15px;height:15px}
 }
+
+/* RC22 · PDF separati per ruolo */
+.export-role-block{grid-column:1/-1;border:1px solid var(--line,#2a3142);border-radius:16px;padding:12px;background:rgba(255,255,255,.015)}
+.export-role-head{display:flex;gap:10px;align-items:center;margin-bottom:10px}.export-role-head>span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(245,191,66,.12);color:#f5bf42;font-size:18px}.export-role-head div{display:flex;flex-direction:column;gap:2px}.export-role-head b{font-size:15px}.export-role-head small{font-size:12px;color:var(--muted,#8e95a6)}
+.export-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.role-pdf-btn{min-height:42px;border-radius:12px;border:1px solid var(--line,#2a3142);background:rgba(255,255,255,.025);color:var(--text,#f4f6fb);font-weight:700;font-size:12px;padding:8px}.role-pdf-btn:hover,.role-pdf-btn:focus-visible{border-color:#8d78ff;background:rgba(125,98,255,.12)}
+@media(max-width:560px){.export-role-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

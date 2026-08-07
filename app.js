@@ -319,27 +319,46 @@ function makeExcel(scope){
   downloadBlob('\ufeff'+xml,'application/vnd.ms-excel',`Fanta-Conte-${mine?'Mia-Lista':'Listone'}-${new Date().toISOString().slice(0,10)}.xls`);toast(`${title}: file Excel creato`);
 }
 function priorityText(x){return x.targetLevel?planLabel(x.targetLevel).replace(/^[^ ]+ /,''):x.fav?'Preferito':''}
+
+// RC22 · stampa della Mia Lista in quattro PDF distinti, uno per ruolo.
+function myRoleRows(role){
+  const rank=x=>x.targetLevel==='ASSOLUTO'?1:x.targetLevel==='PRIORITA2'?2:x.targetLevel==='PIANOB'?3:4;
+  return players
+    .filter(p=>p.r===role && profile(p.id).fav)
+    .sort((a,b)=>rank(profile(a.id))-rank(profile(b.id)) || a.n.localeCompare(b.n,'it',{sensitivity:'base'}));
+}
+function priorityDot(x){
+  if(x.targetLevel==='ASSOLUTO')return '<span class="priority-dot p1" title="Priorità 1"></span>';
+  if(x.targetLevel==='PRIORITA2')return '<span class="priority-dot p2" title="Priorità 2"></span>';
+  if(x.targetLevel==='PIANOB')return '<span class="priority-dot p3" title="Piano B"></span>';
+  return '<span class="priority-dot p0" title="Preferito"></span>';
+}
+function printMineRole(role){
+  const roleNames={P:'PORTIERI',D:'DIFENSORI',C:'CENTROCAMPISTI',A:'ATTACCANTI'};
+  const rows=myRoleRows(role);
+  if(!rows.length){toast(`Nessun ${roleNames[role].toLowerCase()} nei Preferiti`);return}
+  const win=window.open('','_blank');if(!win){toast('Consenti i popup per creare il PDF',4500);return}
+  const body=rows.map(p=>{const x=profile(p.id);return `<tr><td class="check">□</td><td class="name">${htmlEsc(p.n)}</td><td class="team">${htmlEsc(p.t)}</td><td class="prio">${priorityDot(x)}</td></tr>`}).join('');
+  const css=`@page{size:A4 portrait;margin:14mm 13mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;background:#fff;margin:0}h1{font-size:20pt;margin:0 0 10mm;border-bottom:2px solid #111;padding-bottom:5mm;letter-spacing:.4px}table{width:100%;border-collapse:collapse;table-layout:fixed}thead th{font-size:9pt;text-transform:uppercase;letter-spacing:.4px;color:#666;border-bottom:1.5px solid #777;padding:0 6px 6px;text-align:left}tbody td{border-bottom:1px solid #d3d6da;padding:7px 6px;vertical-align:middle}.check{width:10%;font-size:18pt;text-align:center}.name{width:48%;font-size:13pt;font-weight:700}.team{width:32%;font-size:11pt;color:#333}.prio{width:10%;text-align:center}.priority-dot{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.16);vertical-align:middle}.p1{background:#ef445a}.p2{background:#f2bd3f}.p3{background:#4eaee8}.p0{background:#8d7af0}footer{margin-top:8mm;font-size:8pt;color:#777}.count{float:right;font-size:9pt;color:#555;font-weight:400}`;
+  const title=roleNames[role];
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body><h1>${title}<span class="count">${rows.length} giocatori</span></h1><table><thead><tr><th></th><th>Giocatore</th><th>Squadra</th><th></th></tr></thead><tbody>${body}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
+}
+
 function printPdf(scope){
   const mine=scope==='mine', rows=exportRows(scope);
   const roleNames={P:'PORTIERI',D:'DIFENSORI',C:'CENTROCAMPISTI',A:'ATTACCANTI'};
   const grouped=['P','D','C','A'].map(role=>({role,rows:rows.filter(p=>p.r===role)})).filter(g=>g.rows.length);
-  let sections='';
-  if(mine){
-    const rank=x=>x.targetLevel==='ASSOLUTO'?1:x.targetLevel==='PRIORITA2'?2:x.targetLevel==='PIANOB'?3:4;
-    const priorityMark=x=>x.targetLevel==='ASSOLUTO'?'<span class="prio p1">●</span><b>Priorità 1</b>':x.targetLevel==='PRIORITA2'?'<span class="prio p2">●</span><b>Priorità 2</b>':x.targetLevel==='PIANOB'?'<span class="prio p3">●</span><b>Piano B</b>':'<span class="prio p0">★</span><b>Preferito</b>';
-    sections=grouped.map((g,idx)=>{
-      const ordered=g.rows.slice().sort((a,b)=>rank(profile(a.id))-rank(profile(b.id))||num(b.qa)-num(a.qa)||a.n.localeCompare(b.n));
-      return `<section class="role-page ${idx?'new-page':''}"><h2>${roleNames[g.role]}</h2><div class="role-count">${ordered.length} giocatori</div><div class="simple-list">${ordered.map(p=>{const x=profile(p.id);return `<div class="simple-row ${x.targetLevel||'FAV'}"><span class="check">□</span><span class="player-name">${htmlEsc(p.n)}</span><span class="priority">${priorityMark(x)}</span></div>`}).join('')}</div></section>`;
-    }).join('');
-  }else{
-    sections=grouped.map(g=>`<section><h2>${roleNames[g.role]} <small>${g.rows.length}</small></h2><table><thead><tr><th>✓</th><th>Giocatore</th><th>Squadra</th><th>Qt.</th><th>FVM</th><th>Prezzo</th><th>Acquistato da</th></tr></thead><tbody>${g.rows.map(p=>{const x=profile(p.id);return `<tr class="${x.bought?'bought':''}"><td class="check">□</td><td><b>${htmlEsc(p.n)}</b></td><td>${htmlEsc(p.t)}</td><td>${htmlEsc(p.qa)}</td><td>${htmlEsc(p.fvm)}</td><td>${htmlEsc(x.buyPrice||'')}</td><td>${htmlEsc(x.buyOwner||'')}</td></tr>`}).join('')}</tbody></table></section>`).join('');
-  }
-  const title=mine?'FANTA CONTE - MIA LISTA':'LISTONE COMPLETO - FOGLIO ASTA';
+  if(mine){toast('Scegli uno dei quattro pulsanti ruolo per creare il PDF');return}
+  const sections=grouped.map(g=>`<section><h2>${roleNames[g.role]} <small>${g.rows.length}</small></h2><table><thead><tr><th>✓</th><th>Giocatore</th><th>Squadra</th><th>Qt.</th><th>FVM</th><th>Prezzo</th><th>Acquistato da</th></tr></thead><tbody>${g.rows.map(p=>{const x=profile(p.id);return `<tr class="${x.bought?'bought':''}"><td class="check">□</td><td><b>${htmlEsc(p.n)}</b></td><td>${htmlEsc(p.t)}</td><td>${htmlEsc(p.qa)}</td><td>${htmlEsc(p.fvm)}</td><td>${htmlEsc(x.buyPrice||'')}</td><td>${htmlEsc(x.buyOwner||'')}</td></tr>`}).join('')}</tbody></table></section>`).join('');
+  const title='LISTONE COMPLETO - FOGLIO ASTA';
   const win=window.open('','_blank');if(!win){toast('Consenti i popup per creare il PDF',4500);return}
-  const css=mine?`@page{size:A4 portrait;margin:12mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;margin:0;background:#fff}header{border-bottom:2px solid #111;padding-bottom:7px;margin-bottom:10px}h1{font-size:18pt;margin:0}header p{margin:3px 0 0;font-size:9pt;color:#555}.role-page{position:relative}.new-page{break-before:page;page-break-before:always}.role-page h2{font-size:18pt;margin:0 0 2px;padding:7px 10px;background:#f1f3f5;border-left:7px solid #444}.role-count{font-size:9pt;color:#666;margin:0 0 10px 11px}.simple-list{display:block}.simple-row{display:grid;grid-template-columns:34px 1fr 118px;align-items:center;min-height:35px;border-bottom:1px solid #cfd4da;padding:4px 7px}.simple-row:first-child{border-top:1px solid #cfd4da}.check{font-size:18pt;line-height:1}.player-name{font-size:13pt;font-weight:700}.priority{font-size:9.5pt;text-align:right;white-space:nowrap}.prio{font-size:15pt;vertical-align:-1px;margin-right:5px}.p1{color:#c62828}.p2{color:#d99b00}.p3{color:#1976d2}.p0{color:#777}.ASSOLUTO{border-left:5px solid #c62828}.PRIORITA2{border-left:5px solid #d99b00}.PIANOB{border-left:5px solid #1976d2}.FAV{border-left:5px solid #9aa0a6}footer{position:fixed;bottom:2mm;right:0;font-size:7pt;color:#777}`:`@page{size:A4 landscape;margin:9mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;margin:0;font-size:8.5pt}header{display:flex;justify-content:space-between;align-items:end;border-bottom:2px solid #111;padding-bottom:5px;margin-bottom:7px}h1{font-size:16pt;margin:0}header p{margin:0;font-size:8pt;color:#555}section{break-inside:avoid;margin-bottom:9px}h2{font-size:11pt;margin:6px 0 3px;padding:4px 6px;background:#e9edf2;border-left:5px solid #555}h2 small{font-size:8pt;color:#666}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #999;padding:3px 4px;vertical-align:top;word-wrap:break-word}th{background:#f0f0f0;text-align:left;font-size:7.5pt}.check{font-size:14pt;text-align:center;width:25px}.bought td{text-decoration:line-through;color:#777}footer{position:fixed;bottom:0;right:0;font-size:7pt;color:#777}`;
-  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body><header><h1>${title}</h1><p>${htmlEsc(meta.label)} · ${new Date().toLocaleDateString('it-IT')} · ${rows.length} giocatori</p></header>${sections}<footer>Fanta Conte RC21</footer><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
+  const css=`@page{size:A4 landscape;margin:9mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;margin:0;font-size:8.5pt}header{display:flex;justify-content:space-between;align-items:end;border-bottom:2px solid #111;padding-bottom:5px;margin-bottom:7px}h1{font-size:16pt;margin:0}header p{margin:0;font-size:8pt;color:#555}section{break-inside:avoid;margin-bottom:9px}h2{font-size:11pt;margin:6px 0 3px;padding:4px 6px;background:#e9edf2;border-left:5px solid #555}h2 small{font-size:8pt;color:#666}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #999;padding:3px 4px;vertical-align:top;word-wrap:break-word}th{background:#f0f0f0;text-align:left;font-size:7.5pt}.check{font-size:14pt;text-align:center;width:25px}.bought td{text-decoration:line-through;color:#777}`;
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body><header><h1>${title}</h1><p>${htmlEsc(meta.label)} · ${new Date().toLocaleDateString('it-IT')} · ${rows.length} giocatori</p></header>${sections}<script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
 }
 $('#excelFull')?.addEventListener('click',()=>makeExcel('full'));
 $('#excelMine')?.addEventListener('click',()=>makeExcel('mine'));
 $('#pdfFull')?.addEventListener('click',()=>printPdf('full'));
-$('#pdfMine')?.addEventListener('click',()=>printPdf('mine'));
+$('#pdfMineP')?.addEventListener('click',()=>printMineRole('P'));
+$('#pdfMineD')?.addEventListener('click',()=>printMineRole('D'));
+$('#pdfMineC')?.addEventListener('click',()=>printMineRole('C'));
+$('#pdfMineA')?.addEventListener('click',()=>printMineRole('A'));
