@@ -1,11 +1,14 @@
-FANTA CONTE RC20
+FANTA CONTE RC21
 
-Aggiornamento grafico mirato delle schede giocatore:
-- nome, squadra/ruolo, quotazione, FVM e variazione più grandi e leggibili;
-- pallino priorità più evidente e spostato accanto al nome del giocatore;
-- nessuna modifica alla struttura, ai filtri, alle liste o ai dati salvati.
+RC21 - PDF ASTA DEFINITIVI
 
-Caricare tutti i file nel repository sostituendo quelli esistenti.
-Aprire poi: https://conterb80.github.io/Fanta-Conte/?v=RC20
+- PDF Mia Lista: solo giocatori Preferiti
+- Liste separate per ruolo: Portieri, Difensori, Centrocampisti, Attaccanti
+- Ogni ruolo parte su una nuova pagina
+- Ordinamento: Priorità 1, Priorità 2, Piano B, Preferiti senza priorità
+- Stampa semplificata: casella, nome e priorità
+- PDF Listone: foglio operativo completo diviso per ruolo
+- Excel invariati e completi
 
-RC20: filtro Squadra reso protagonista con conteggio giocatori/scelte e ulteriore aumento della leggibilità dei dati nelle schede.
+Caricare tutti i file nel repository Fanta-Conte e aprire:
+https://conterb80.github.io/Fanta-Conte/?v=RC21
