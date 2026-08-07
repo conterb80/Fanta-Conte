@@ -320,56 +320,77 @@ function makeExcel(scope){
 }
 function priorityText(x){return x.targetLevel?planLabel(x.targetLevel).replace(/^[^ ]+ /,''):x.fav?'Preferito':''}
 
-// RC24 · Stampa finale: un foglio A4 per ruolo, senza checkbox, priorità ben visibile a sinistra.
+// RC25 · Stampa finale Mia Lista: un foglio A4 per ruolo, compatto e senza caselle.
 function myRoleRows(role){
+  const rank=x=>x.targetLevel==='ASSOLUTO'?1:x.targetLevel==='PRIORITA2'?2:x.targetLevel==='PIANOB'?3:4;
   return players
     .filter(p=>p.r===role && profile(p.id).fav)
-    .sort((a,b)=>groupOrder(profile(a.id))-groupOrder(profile(b.id)) || a.n.localeCompare(b.n,'it',{sensitivity:'base'}));
+    .sort((a,b)=>rank(profile(a.id))-rank(profile(b.id)) || a.n.localeCompare(b.n,'it',{sensitivity:'base'}));
+}
+function priorityRank(x){
+  return x.targetLevel==='ASSOLUTO'?1:x.targetLevel==='PRIORITA2'?2:x.targetLevel==='PIANOB'?3:4;
 }
 function priorityMark(x){
-  if(x.targetLevel==='ASSOLUTO')return '<span class="priority-mark p1" title="Priorità 1">●</span>';
-  if(x.targetLevel==='PRIORITA2')return '<span class="priority-mark p2" title="Priorità 2">●</span>';
-  if(x.targetLevel==='PIANOB')return '<span class="priority-mark p3" title="Piano B">●</span>';
-  return '<span class="priority-mark p0" title="Preferito">●</span>';
+  // Simbolo + colore: resta distinguibile anche se la stampante attenua i colori.
+  if(x.targetLevel==='ASSOLUTO')return '<span class="prio p1" title="Priorità 1">●</span>';
+  if(x.targetLevel==='PRIORITA2')return '<span class="prio p2" title="Priorità 2">◐</span>';
+  if(x.targetLevel==='PIANOB')return '<span class="prio p3" title="Piano B">○</span>';
+  return '<span class="prio p0" title="Preferito">★</span>';
 }
 function printMineRole(role){
   const roleNames={P:'PORTIERI',D:'DIFENSORI',C:'CENTROCAMPISTI',A:'ATTACCANTI'};
   const rows=myRoleRows(role);
   if(!rows.length){toast(`Nessun ${roleNames[role].toLowerCase()} nei Preferiti`);return}
-  const win=window.open('','_blank');if(!win){toast('Consenti i popup per creare il PDF',4500);return}
-  let prevGroup='';
-  const body=rows.map(p=>{
-    const x=profile(p.id),g=groupKey(x),start=g!==prevGroup;prevGroup=g;
-    return `<tr class="${g}${start?' group-start':''}"><td class="player"><span class="mark-wrap">${priorityMark(x)}</span><span class="player-name">${htmlEsc(p.n)}</span></td><td class="team">${htmlEsc(p.t)}</td></tr>`
-  }).join('');
-  // Più giocatori = righe più compatte, così l'obiettivo resta una sola pagina A4 per ruolo.
-  const density=rows.length>44?'dense2':rows.length>34?'dense1':'normal';
+
+  // La finestra viene aperta direttamente dal click: evita il blocco popup dei browser.
+  const win=window.open('about:blank','_blank');
+  if(!win){toast('Il browser ha bloccato la stampa: consenti i popup per Fanta Conte',5000);return}
+
+  // Due colonne quando la lista è lunga: così anche i reparti numerosi stanno su un solo A4.
+  const useTwoCols=rows.length>30;
+  const split=useTwoCols?Math.ceil(rows.length/2):rows.length;
+  const groups=[rows.slice(0,split), ...(useTwoCols?[rows.slice(split)]:[])];
+
+  const renderCol=(arr)=>{
+    let prev=0;
+    return arr.map(p=>{
+      const x=profile(p.id), r=priorityRank(x), start=prev!==0 && r!==prev; prev=r;
+      return `<div class="player-row r${r}${start?' group-start':''}">
+        <div class="player-name">${priorityMark(x)}<span>${htmlEsc(p.n)}</span></div>
+        <div class="player-team">${htmlEsc(p.t)}</div>
+      </div>`;
+    }).join('');
+  };
+
+  const cols=groups.map(g=>`<div class="print-col">${renderCol(g)}</div>`).join('');
+  const compact=rows.length>55?' ultra':rows.length>40?' dense':'';
+  const title=roleNames[role];
+
   const css=`
-    @page{size:A4 portrait;margin:8mm 10mm}
+    @page{size:A4 portrait;margin:8mm 9mm}
     *{box-sizing:border-box;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}
-    body{font-size:11pt}
-    h1{font-size:19pt;line-height:1.05;margin:0 0 4mm;padding:0 0 3mm;border-bottom:2px solid #222;letter-spacing:.25px}
-    .count{float:right;font-size:9pt;color:#666;font-weight:400;margin-top:5px}
-    table{width:100%;border-collapse:collapse;table-layout:fixed}
-    thead th{font-size:8.5pt;text-transform:uppercase;letter-spacing:.35px;color:#555;border-bottom:1.4px solid #777;padding:0 5px 2.2mm;text-align:left}
-    tbody td{border-bottom:1px solid #ddd;padding:2.25mm 5px;vertical-align:middle;line-height:1.08}
-    tbody tr.group-start:not(:first-child) td{border-top:1.8px solid #777;padding-top:2.8mm}
-    .player{width:68%;font-size:12.2pt;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .team{width:32%;font-size:11.2pt;color:#333;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .mark-wrap{display:inline-block;width:8mm;text-align:center;margin-right:1.5mm;vertical-align:baseline}
-    .priority-mark{font-size:18pt;line-height:.7;font-family:Arial,sans-serif;font-weight:900;text-shadow:0 0 0 currentColor}
-    .p1{color:#d9273f}.p2{color:#d79a00}.p3{color:#1266b3}.p0{color:#7543a9}
-    tr.g1.group-start td{border-top-color:#d9273f}
-    tr.g2.group-start td{border-top-color:#d79a00}
-    tr.g3.group-start td{border-top-color:#1266b3}
-    tr.g0.group-start td{border-top-color:#7543a9}
-    body.dense1 tbody td{padding:1.75mm 5px} body.dense1 .player{font-size:11.4pt} body.dense1 .team{font-size:10.4pt} body.dense1 .priority-mark{font-size:16pt}
-    body.dense2 tbody td{padding:1.35mm 5px} body.dense2 .player{font-size:10.7pt} body.dense2 .team{font-size:9.8pt} body.dense2 .priority-mark{font-size:15pt} body.dense2 h1{font-size:17pt;margin-bottom:2.5mm;padding-bottom:2mm}
-    @media print{html,body{width:210mm;min-height:297mm}tr{break-inside:avoid;page-break-inside:avoid}}
+    body{width:100%}
+    .sheet{width:100%;page-break-after:avoid;break-after:avoid-page}
+    h1{margin:0 0 4mm;padding:0 0 2.5mm;border-bottom:2px solid #222;font-size:20pt;line-height:1;font-weight:800;letter-spacing:.25px}
+    .cols{display:grid;grid-template-columns:${useTwoCols?'1fr 1fr':'1fr'};gap:${useTwoCols?'9mm':'0'}}
+    .print-col{min-width:0}
+    .player-row{display:grid;grid-template-columns:minmax(0,1fr) 34%;align-items:center;min-height:6.7mm;padding:1.15mm 1.5mm;border-bottom:.35mm solid #d7d7d7;break-inside:avoid}
+    .player-row.group-start{border-top:1.1mm solid #555;margin-top:1.2mm;padding-top:1.6mm}
+    .player-name{display:flex;align-items:center;min-width:0;font-size:11.2pt;font-weight:700;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .player-team{font-size:9.8pt;line-height:1.05;text-align:right;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .prio{display:inline-flex;align-items:center;justify-content:center;width:6.2mm;min-width:6.2mm;margin-right:1.7mm;font-size:16pt;font-weight:900;line-height:1}
+    .p1{color:#d71920}.p2{color:#d59a00}.p3{color:#075fb5}.p0{color:#6c3aa5}
+    .dense .player-row{min-height:5.6mm;padding:.75mm 1.2mm}
+    .dense .player-name{font-size:10pt}.dense .player-team{font-size:9pt}.dense .prio{font-size:14pt;width:5.5mm;min-width:5.5mm;margin-right:1.3mm}
+    .ultra .player-row{min-height:4.9mm;padding:.45mm 1mm}
+    .ultra .player-name{font-size:9.2pt}.ultra .player-team{font-size:8.4pt}.ultra .prio{font-size:13pt;width:5mm;min-width:5mm;margin-right:1.1mm}
+    @media print{body{overflow:visible}.sheet{page-break-inside:avoid;break-inside:avoid-page}}
   `;
-  const title=roleNames[role];
-  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body class="${density}"><h1>${title}<span class="count">${rows.length} giocatori</span></h1><table><thead><tr><th>Giocatore</th><th style="text-align:right">Squadra</th></tr></thead><tbody>${body}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
+
+  win.document.open();
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${css}</style></head><body><main class="sheet${compact}"><h1>${title}</h1><div class="cols">${cols}</div></main><script>window.addEventListener('load',function(){setTimeout(function(){window.focus();window.print();},300)});<\/script></body></html>`);
+  win.document.close();
 }
 
 function printPdf(scope){

@@ -1,19 +1,17 @@
-FANTA CONTE RC24
+FANTA CONTE RC25
 
-RC24 - PDF MIA LISTA SEPARATI PER RUOLO
+RC25 - STAMPA FINALE MIA LISTA
 
-Novità:
-- 4 pulsanti PDF distinti: Portieri, Difensori, Centrocampisti, Attaccanti.
-- PDF puliti, senza intestazione Fanta Conte.
-- Solo giocatori Preferiti.
-- Ordinamento: Priorità 1, Priorità 2, Piano B, altri Preferiti; alfabetico dentro ogni gruppo.
-- Colonna Squadra.
-- Pallino priorità grande a destra, senza testo.
-- PDF Listone completo invariato.
+- Un PDF separato per ruolo.
+- Impaginazione ottimizzata per stare su un solo foglio A4.
+- Liste lunghe disposte automaticamente su due colonne.
+- Nessuna casella da spuntare.
+- Priorità a sinistra del nome con simbolo + colore: ● Priorità 1, ◐ Priorità 2, ○ Piano B, ★ Preferito.
+- Nome giocatore in evidenza e squadra allineata a destra.
+- Riga marcata quando cambia gruppo di priorità.
+- Ordinamento per priorità e alfabetico all'interno di ogni gruppo.
+- Nessun riferimento a Fanta Conte nel foglio stampato.
+- Nessuna modifica ai dati salvati, al listone o alla Mia Lista.
 
 Apri dopo il caricamento:
-https://conterb80.github.io/Fanta-Conte/?v=RC24
-
-RC24: nei PDF per ruolo il pallino priorità è ora accanto al nome; separatori colorati tra i gruppi di priorità; casella da depennare a destra.
-
-RC24: stampa finale Mia Lista: un A4 per ruolo, niente checkbox, pallino priorità a sinistra del nome, squadra a destra, colori forzati in stampa e densità automatica per cercare di restare su una pagina.
+https://conterb80.github.io/Fanta-Conte/?v=RC25
