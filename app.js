@@ -320,7 +320,7 @@ function makeExcel(scope){
 }
 function priorityText(x){return x.targetLevel?planLabel(x.targetLevel).replace(/^[^ ]+ /,''):x.fav?'Preferito':''}
 
-// RC22 · stampa della Mia Lista in quattro PDF distinti, uno per ruolo.
+// RC23 · PDF per ruolo: priorità accanto al nome e separatori cromatici.
 function myRoleRows(role){
   const rank=x=>x.targetLevel==='ASSOLUTO'?1:x.targetLevel==='PRIORITA2'?2:x.targetLevel==='PIANOB'?3:4;
   return players
@@ -338,10 +338,12 @@ function printMineRole(role){
   const rows=myRoleRows(role);
   if(!rows.length){toast(`Nessun ${roleNames[role].toLowerCase()} nei Preferiti`);return}
   const win=window.open('','_blank');if(!win){toast('Consenti i popup per creare il PDF',4500);return}
-  const body=rows.map(p=>{const x=profile(p.id);return `<tr><td class="check">□</td><td class="name">${htmlEsc(p.n)}</td><td class="team">${htmlEsc(p.t)}</td><td class="prio">${priorityDot(x)}</td></tr>`}).join('');
-  const css=`@page{size:A4 portrait;margin:14mm 13mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;background:#fff;margin:0}h1{font-size:20pt;margin:0 0 10mm;border-bottom:2px solid #111;padding-bottom:5mm;letter-spacing:.4px}table{width:100%;border-collapse:collapse;table-layout:fixed}thead th{font-size:9pt;text-transform:uppercase;letter-spacing:.4px;color:#666;border-bottom:1.5px solid #777;padding:0 6px 6px;text-align:left}tbody td{border-bottom:1px solid #d3d6da;padding:7px 6px;vertical-align:middle}.check{width:10%;font-size:18pt;text-align:center}.name{width:48%;font-size:13pt;font-weight:700}.team{width:32%;font-size:11pt;color:#333}.prio{width:10%;text-align:center}.priority-dot{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.16);vertical-align:middle}.p1{background:#ef445a}.p2{background:#f2bd3f}.p3{background:#4eaee8}.p0{background:#8d7af0}footer{margin-top:8mm;font-size:8pt;color:#777}.count{float:right;font-size:9pt;color:#555;font-weight:400}`;
+  const groupKey=x=>x.targetLevel==='ASSOLUTO'?'g1':x.targetLevel==='PRIORITA2'?'g2':x.targetLevel==='PIANOB'?'g3':'g0';
+  let prevGroup='';
+  const body=rows.map(p=>{const x=profile(p.id),g=groupKey(x),start=g!==prevGroup;prevGroup=g;return `<tr class="${g}${start?' group-start':''}"><td class="name"><span class="dot-wrap">${priorityDot(x)}</span><span>${htmlEsc(p.n)}</span></td><td class="team">${htmlEsc(p.t)}</td><td class="check">□</td></tr>`}).join('');
+  const css=`@page{size:A4 portrait;margin:14mm 13mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;background:#fff;margin:0}h1{font-size:20pt;margin:0 0 10mm;border-bottom:2px solid #111;padding-bottom:5mm;letter-spacing:.4px}table{width:100%;border-collapse:collapse;table-layout:fixed}thead th{font-size:9pt;text-transform:uppercase;letter-spacing:.4px;color:#666;border-bottom:1.5px solid #777;padding:0 8px 6px;text-align:left}tbody td{border-bottom:1px solid #d3d6da;padding:7px 8px;vertical-align:middle}tbody tr.group-start:not(:first-child) td{border-top-width:2px;border-top-style:solid}.g1.group-start td{border-top-color:#ef445a}.g2.group-start td{border-top-color:#f2bd3f}.g3.group-start td{border-top-color:#4eaee8}.g0.group-start td{border-top-color:#8d7af0}.name{width:56%;font-size:13pt;font-weight:700;white-space:nowrap}.team{width:34%;font-size:11pt;color:#333}.check{width:10%;font-size:18pt;text-align:center}.dot-wrap{display:inline-flex;align-items:center;justify-content:center;width:27px;margin-right:8px;vertical-align:middle}.priority-dot{display:inline-block;width:20px;height:20px;border-radius:50%;border:1px solid rgba(0,0,0,.18);vertical-align:middle;box-shadow:0 0 0 1px rgba(255,255,255,.8) inset}.p1{background:#ef445a}.p2{background:#f2bd3f}.p3{background:#4eaee8}.p0{background:#8d7af0}.count{float:right;font-size:9pt;color:#555;font-weight:400}`;
   const title=roleNames[role];
-  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body><h1>${title}<span class="count">${rows.length} giocatori</span></h1><table><thead><tr><th></th><th>Giocatore</th><th>Squadra</th><th></th></tr></thead><tbody>${body}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body><h1>${title}<span class="count">${rows.length} giocatori</span></h1><table><thead><tr><th>Giocatore</th><th>Squadra</th><th></th></tr></thead><tbody>${body}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
 }
 
 function printPdf(scope){

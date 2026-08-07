@@ -1,6 +1,6 @@
-FANTA CONTE RC22
+FANTA CONTE RC23
 
-RC22 - PDF MIA LISTA SEPARATI PER RUOLO
+RC23 - PDF MIA LISTA SEPARATI PER RUOLO
 
 Novità:
 - 4 pulsanti PDF distinti: Portieri, Difensori, Centrocampisti, Attaccanti.
@@ -12,4 +12,6 @@ Novità:
 - PDF Listone completo invariato.
 
 Apri dopo il caricamento:
-https://conterb80.github.io/Fanta-Conte/?v=RC22
+https://conterb80.github.io/Fanta-Conte/?v=RC23
+
+RC23: nei PDF per ruolo il pallino priorità è ora accanto al nome; separatori colorati tra i gruppi di priorità; casella da depennare a destra.
