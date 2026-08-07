@@ -320,7 +320,7 @@ function makeExcel(scope){
 }
 function priorityText(x){return x.targetLevel?planLabel(x.targetLevel).replace(/^[^ ]+ /,''):x.fav?'Preferito':''}
 
-// RC25 · Stampa finale Mia Lista: un foglio A4 per ruolo, compatto e senza caselle.
+// RC26 · Final Print Edition: colonne automatiche 1/2/3/4 in base alla lunghezza della lista.
 function myRoleRows(role){
   const rank=x=>x.targetLevel==='ASSOLUTO'?1:x.targetLevel==='PRIORITA2'?2:x.targetLevel==='PIANOB'?3:4;
   return players
@@ -346,10 +346,11 @@ function printMineRole(role){
   const win=window.open('about:blank','_blank');
   if(!win){toast('Il browser ha bloccato la stampa: consenti i popup per Fanta Conte',5000);return}
 
-  // Due colonne quando la lista è lunga: così anche i reparti numerosi stanno su un solo A4.
-  const useTwoCols=rows.length>30;
-  const split=useTwoCols?Math.ceil(rows.length/2):rows.length;
-  const groups=[rows.slice(0,split), ...(useTwoCols?[rows.slice(split)]:[])];
+  // Colonne automatiche: più nomi = più colonne, mantenendo un solo foglio A4 quando possibile.
+  const colCount=rows.length<=24?1:rows.length<=48?2:rows.length<=72?3:4;
+  const chunk=Math.ceil(rows.length/colCount);
+  const groups=Array.from({length:colCount},(_,i)=>rows.slice(i*chunk,(i+1)*chunk)).filter(g=>g.length);
+  const landscape=colCount>=3;
 
   const renderCol=(arr)=>{
     let prev=0;
@@ -363,17 +364,17 @@ function printMineRole(role){
   };
 
   const cols=groups.map(g=>`<div class="print-col">${renderCol(g)}</div>`).join('');
-  const compact=rows.length>55?' ultra':rows.length>40?' dense':'';
+  const compact=colCount===4?' ultra':colCount===3?' dense':'';
   const title=roleNames[role];
 
   const css=`
-    @page{size:A4 portrait;margin:8mm 9mm}
+    @page{size:A4 ${landscape?'landscape':'portrait'};margin:${landscape?'7mm 8mm':'8mm 9mm'}}
     *{box-sizing:border-box;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
     html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}
     body{width:100%}
     .sheet{width:100%;page-break-after:avoid;break-after:avoid-page}
     h1{margin:0 0 4mm;padding:0 0 2.5mm;border-bottom:2px solid #222;font-size:20pt;line-height:1;font-weight:800;letter-spacing:.25px}
-    .cols{display:grid;grid-template-columns:${useTwoCols?'1fr 1fr':'1fr'};gap:${useTwoCols?'9mm':'0'}}
+    .cols{display:grid;grid-template-columns:repeat(${colCount},minmax(0,1fr));gap:${colCount===1?'0':colCount===2?'8mm':'5mm'}}
     .print-col{min-width:0}
     .player-row{display:grid;grid-template-columns:minmax(0,1fr) 34%;align-items:center;min-height:6.7mm;padding:1.15mm 1.5mm;border-bottom:.35mm solid #d7d7d7;break-inside:avoid}
     .player-row.group-start{border-top:1.1mm solid #555;margin-top:1.2mm;padding-top:1.6mm}
@@ -382,9 +383,9 @@ function printMineRole(role){
     .prio{display:inline-flex;align-items:center;justify-content:center;width:6.2mm;min-width:6.2mm;margin-right:1.7mm;font-size:16pt;font-weight:900;line-height:1}
     .p1{color:#d71920}.p2{color:#d59a00}.p3{color:#075fb5}.p0{color:#6c3aa5}
     .dense .player-row{min-height:5.6mm;padding:.75mm 1.2mm}
-    .dense .player-name{font-size:10pt}.dense .player-team{font-size:9pt}.dense .prio{font-size:14pt;width:5.5mm;min-width:5.5mm;margin-right:1.3mm}
+    .dense .player-row{grid-template-columns:minmax(0,1fr) 31%}.dense .player-name{font-size:9.6pt}.dense .player-team{font-size:8.6pt}.dense .prio{font-size:13.5pt;width:5mm;min-width:5mm;margin-right:1.1mm}
     .ultra .player-row{min-height:4.9mm;padding:.45mm 1mm}
-    .ultra .player-name{font-size:9.2pt}.ultra .player-team{font-size:8.4pt}.ultra .prio{font-size:13pt;width:5mm;min-width:5mm;margin-right:1.1mm}
+    .ultra .player-row{grid-template-columns:minmax(0,1fr) 29%}.ultra .player-name{font-size:8.8pt}.ultra .player-team{font-size:7.8pt}.ultra .prio{font-size:12.5pt;width:4.6mm;min-width:4.6mm;margin-right:.9mm}
     @media print{body{overflow:visible}.sheet{page-break-inside:avoid;break-inside:avoid-page}}
   `;
 
