@@ -320,30 +320,56 @@ function makeExcel(scope){
 }
 function priorityText(x){return x.targetLevel?planLabel(x.targetLevel).replace(/^[^ ]+ /,''):x.fav?'Preferito':''}
 
-// RC23 · PDF per ruolo: priorità accanto al nome e separatori cromatici.
+// RC24 · Stampa finale: un foglio A4 per ruolo, senza checkbox, priorità ben visibile a sinistra.
 function myRoleRows(role){
-  const rank=x=>x.targetLevel==='ASSOLUTO'?1:x.targetLevel==='PRIORITA2'?2:x.targetLevel==='PIANOB'?3:4;
   return players
     .filter(p=>p.r===role && profile(p.id).fav)
-    .sort((a,b)=>rank(profile(a.id))-rank(profile(b.id)) || a.n.localeCompare(b.n,'it',{sensitivity:'base'}));
+    .sort((a,b)=>groupOrder(profile(a.id))-groupOrder(profile(b.id)) || a.n.localeCompare(b.n,'it',{sensitivity:'base'}));
 }
-function priorityDot(x){
-  if(x.targetLevel==='ASSOLUTO')return '<span class="priority-dot p1" title="Priorità 1"></span>';
-  if(x.targetLevel==='PRIORITA2')return '<span class="priority-dot p2" title="Priorità 2"></span>';
-  if(x.targetLevel==='PIANOB')return '<span class="priority-dot p3" title="Piano B"></span>';
-  return '<span class="priority-dot p0" title="Preferito"></span>';
+function priorityMark(x){
+  if(x.targetLevel==='ASSOLUTO')return '<span class="priority-mark p1" title="Priorità 1">●</span>';
+  if(x.targetLevel==='PRIORITA2')return '<span class="priority-mark p2" title="Priorità 2">●</span>';
+  if(x.targetLevel==='PIANOB')return '<span class="priority-mark p3" title="Piano B">●</span>';
+  return '<span class="priority-mark p0" title="Preferito">●</span>';
 }
 function printMineRole(role){
   const roleNames={P:'PORTIERI',D:'DIFENSORI',C:'CENTROCAMPISTI',A:'ATTACCANTI'};
   const rows=myRoleRows(role);
   if(!rows.length){toast(`Nessun ${roleNames[role].toLowerCase()} nei Preferiti`);return}
   const win=window.open('','_blank');if(!win){toast('Consenti i popup per creare il PDF',4500);return}
-  const groupKey=x=>x.targetLevel==='ASSOLUTO'?'g1':x.targetLevel==='PRIORITA2'?'g2':x.targetLevel==='PIANOB'?'g3':'g0';
   let prevGroup='';
-  const body=rows.map(p=>{const x=profile(p.id),g=groupKey(x),start=g!==prevGroup;prevGroup=g;return `<tr class="${g}${start?' group-start':''}"><td class="name"><span class="dot-wrap">${priorityDot(x)}</span><span>${htmlEsc(p.n)}</span></td><td class="team">${htmlEsc(p.t)}</td><td class="check">□</td></tr>`}).join('');
-  const css=`@page{size:A4 portrait;margin:14mm 13mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;background:#fff;margin:0}h1{font-size:20pt;margin:0 0 10mm;border-bottom:2px solid #111;padding-bottom:5mm;letter-spacing:.4px}table{width:100%;border-collapse:collapse;table-layout:fixed}thead th{font-size:9pt;text-transform:uppercase;letter-spacing:.4px;color:#666;border-bottom:1.5px solid #777;padding:0 8px 6px;text-align:left}tbody td{border-bottom:1px solid #d3d6da;padding:7px 8px;vertical-align:middle}tbody tr.group-start:not(:first-child) td{border-top-width:2px;border-top-style:solid}.g1.group-start td{border-top-color:#ef445a}.g2.group-start td{border-top-color:#f2bd3f}.g3.group-start td{border-top-color:#4eaee8}.g0.group-start td{border-top-color:#8d7af0}.name{width:56%;font-size:13pt;font-weight:700;white-space:nowrap}.team{width:34%;font-size:11pt;color:#333}.check{width:10%;font-size:18pt;text-align:center}.dot-wrap{display:inline-flex;align-items:center;justify-content:center;width:27px;margin-right:8px;vertical-align:middle}.priority-dot{display:inline-block;width:20px;height:20px;border-radius:50%;border:1px solid rgba(0,0,0,.18);vertical-align:middle;box-shadow:0 0 0 1px rgba(255,255,255,.8) inset}.p1{background:#ef445a}.p2{background:#f2bd3f}.p3{background:#4eaee8}.p0{background:#8d7af0}.count{float:right;font-size:9pt;color:#555;font-weight:400}`;
+  const body=rows.map(p=>{
+    const x=profile(p.id),g=groupKey(x),start=g!==prevGroup;prevGroup=g;
+    return `<tr class="${g}${start?' group-start':''}"><td class="player"><span class="mark-wrap">${priorityMark(x)}</span><span class="player-name">${htmlEsc(p.n)}</span></td><td class="team">${htmlEsc(p.t)}</td></tr>`
+  }).join('');
+  // Più giocatori = righe più compatte, così l'obiettivo resta una sola pagina A4 per ruolo.
+  const density=rows.length>44?'dense2':rows.length>34?'dense1':'normal';
+  const css=`
+    @page{size:A4 portrait;margin:8mm 10mm}
+    *{box-sizing:border-box;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}
+    body{font-size:11pt}
+    h1{font-size:19pt;line-height:1.05;margin:0 0 4mm;padding:0 0 3mm;border-bottom:2px solid #222;letter-spacing:.25px}
+    .count{float:right;font-size:9pt;color:#666;font-weight:400;margin-top:5px}
+    table{width:100%;border-collapse:collapse;table-layout:fixed}
+    thead th{font-size:8.5pt;text-transform:uppercase;letter-spacing:.35px;color:#555;border-bottom:1.4px solid #777;padding:0 5px 2.2mm;text-align:left}
+    tbody td{border-bottom:1px solid #ddd;padding:2.25mm 5px;vertical-align:middle;line-height:1.08}
+    tbody tr.group-start:not(:first-child) td{border-top:1.8px solid #777;padding-top:2.8mm}
+    .player{width:68%;font-size:12.2pt;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .team{width:32%;font-size:11.2pt;color:#333;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mark-wrap{display:inline-block;width:8mm;text-align:center;margin-right:1.5mm;vertical-align:baseline}
+    .priority-mark{font-size:18pt;line-height:.7;font-family:Arial,sans-serif;font-weight:900;text-shadow:0 0 0 currentColor}
+    .p1{color:#d9273f}.p2{color:#d79a00}.p3{color:#1266b3}.p0{color:#7543a9}
+    tr.g1.group-start td{border-top-color:#d9273f}
+    tr.g2.group-start td{border-top-color:#d79a00}
+    tr.g3.group-start td{border-top-color:#1266b3}
+    tr.g0.group-start td{border-top-color:#7543a9}
+    body.dense1 tbody td{padding:1.75mm 5px} body.dense1 .player{font-size:11.4pt} body.dense1 .team{font-size:10.4pt} body.dense1 .priority-mark{font-size:16pt}
+    body.dense2 tbody td{padding:1.35mm 5px} body.dense2 .player{font-size:10.7pt} body.dense2 .team{font-size:9.8pt} body.dense2 .priority-mark{font-size:15pt} body.dense2 h1{font-size:17pt;margin-bottom:2.5mm;padding-bottom:2mm}
+    @media print{html,body{width:210mm;min-height:297mm}tr{break-inside:avoid;page-break-inside:avoid}}
+  `;
   const title=roleNames[role];
-  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body><h1>${title}<span class="count">${rows.length} giocatori</span></h1><table><thead><tr><th>Giocatore</th><th>Squadra</th><th></th></tr></thead><tbody>${body}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title}</title><style>${css}</style></head><body class="${density}"><h1>${title}<span class="count">${rows.length} giocatori</span></h1><table><thead><tr><th>Giocatore</th><th style="text-align:right">Squadra</th></tr></thead><tbody>${body}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);win.document.close();
 }
 
 function printPdf(scope){
