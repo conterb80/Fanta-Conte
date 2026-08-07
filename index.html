@@ -9,7 +9,7 @@
   <link rel="icon" href="./icons/icon-192.png">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./style.css">
-  <title>Fanta Conte RC19</title>
+  <title>Fanta Conte RC20</title>
 </head>
 <body>
 <header class="app-header">
@@ -17,7 +17,7 @@
     <div class="brand-mark" aria-hidden="true">FC</div>
     <div class="brand-copy">
       <p class="eyebrow">FANTA CONTE · ASTA CONTROL</p>
-      <h1>Fanta Conte <span>RC19</span></h1>
+      <h1>Fanta Conte <span>RC20</span></h1>
     </div>
     <button id="toggleSetup" class="icon-button" type="button" aria-label="Impostazioni">⚙</button>
   </div>
@@ -52,14 +52,17 @@
       <button data-choice="PIANOB"><i class="dot pb"></i>Piano B</button>
       <button data-choice="FAV">★ Preferiti</button>
     </div>
-    <div class="sort-row three">
+    <div class="team-filter-block">
+      <div class="team-filter-copy"><span>Squadra</span><small id="teamScopeInfo">Tutte le squadre</small></div>
+      <select id="teamFilter" aria-label="Filtra per squadra"><option value="">Tutte le squadre</option></select>
+    </div>
+    <div class="sort-row two">
       <select id="availabilityFilter" aria-label="Disponibilità">
         <option value="AVAILABLE">Solo disponibili</option>
         <option value="ALL">Tutti</option>
         <option value="BOUGHT">Solo acquistati</option>
         <option value="MINE">La mia rosa</option>
       </select>
-      <select id="teamFilter" aria-label="Squadra"><option value="">Tutte le squadre</option></select>
       <select id="sortBy" aria-label="Ordinamento">
         <option value="qa-desc">Quotazione ↓</option>
         <option value="fvm-desc">FVM ↓</option>
